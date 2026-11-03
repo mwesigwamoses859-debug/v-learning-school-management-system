@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "v-learning-school-management-system",
+  "main": "cloudflare/worker.ts",
+  "compatibility_date": "2026-07-27",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "v-learning-sms-db",
+      "database_id": "5ba92481-162b-4b2c-9fcb-149c5d32a844",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": {
+    "EMAIL_FROM": "V-Learning School Portal <onboarding@resend.dev>"
+  }
+}
