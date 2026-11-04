@@ -3,7 +3,7 @@
 Live school portal: https://v-learning-school-management-system.mwesigwamoses859.workers.dev/
 Learning platform: https://v-learning-uganda-app.pages.dev/
 
-This is the Cloudflare Worker edition of the supplied school system. Student and academic records persist in D1, rather than a local JSON file. It starts without copied students, marks, staff, attendance, documents or sample activity. Existing copied staff accounts are disabled by the upgrade migration; previously published initial administrator passwords must be changed before opening records.
+This is the Cloudflare Worker edition of the supplied school system. Student and academic records persist in D1, rather than a local JSON file. It starts without copied students, marks, staff, attendance, documents or sample activity. Existing copied staff accounts are disabled by the upgrade migration; the earlier prototype administrator accounts with published initial credentials are also disabled. Use the verified learning administrator dashboard to open this school system.
 
 ## Build and deployment
 

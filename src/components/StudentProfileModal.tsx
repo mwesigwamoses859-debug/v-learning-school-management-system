@@ -409,7 +409,7 @@ export default function StudentProfileModal({
                   </div>
                   <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100">
                     <span className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wide block">Nansana Zone</span>
-                    <span className="text-xs font-bold text-slate-700 truncate block">{student.zoneInNansana || 'Gganda'}</span>
+                    <span className="text-xs font-bold text-slate-700 truncate block">{student.zoneInNansana || 'Not recorded'}</span>
                   </div>
                   <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100">
                     <span className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wide block">Sponsorship</span>
@@ -462,7 +462,7 @@ export default function StudentProfileModal({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                     <div>
                       <span className="text-[10px] text-slate-400 font-extrabold uppercase block">Assigned Worker</span>
-                      <span className="font-bold text-slate-800">{student.communityWorker || 'Florence Namatovu'}</span>
+                      <span className="font-bold text-slate-800">{student.communityWorker || 'Not recorded'}</span>
                     </div>
                     <div>
                       <span className="text-[10px] text-slate-400 font-extrabold uppercase block">Worker Phone</span>
@@ -834,7 +834,7 @@ export default function StudentProfileModal({
                           </li>
                           <li className="flex items-start gap-1.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-1.5 shrink-0" />
-                            <span>Coordinate home visitation with {student.communityWorker || 'Florence Namatovu'} to assess study conditions.</span>
+                            <span>Coordinate home visitation with {student.communityWorker || 'Not recorded'} to assess study conditions.</span>
                           </li>
                           <li className="flex items-start gap-1.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-1.5 shrink-0" />
@@ -844,7 +844,7 @@ export default function StudentProfileModal({
 
                         <div className="pt-2 border-t border-slate-200/50">
                           <span className="text-[9px] font-extrabold text-slate-400 uppercase block">Intake Lead</span>
-                          <span className="text-xs font-bold text-[#032b5e]">{student.communityWorker || 'Florence Namatovu'}</span>
+                          <span className="text-xs font-bold text-[#032b5e]">{student.communityWorker || 'Not recorded'}</span>
                         </div>
                       </div>
                     </div>
@@ -1158,7 +1158,7 @@ export default function StudentProfileModal({
                     </p>
                     <p className="flex justify-between font-medium">
                       <span className="text-slate-400">Residential Address:</span>
-                      <span className="font-bold text-slate-800">Nansana, Zone {student.zoneInNansana || 'Gganda'}</span>
+                      <span className="font-bold text-slate-800">Nansana, Zone {student.zoneInNansana || 'Not recorded'}</span>
                     </p>
                   </div>
                 </div>
@@ -1168,7 +1168,7 @@ export default function StudentProfileModal({
                   <div className="space-y-1.5">
                     <p className="flex justify-between font-medium">
                       <span className="text-slate-400">Full Name:</span>
-                      <span className="font-bold text-slate-800">{student.communityWorker || 'Florence Namatovu'}</span>
+                      <span className="font-bold text-slate-800">{student.communityWorker || 'Not recorded'}</span>
                     </p>
                     <p className="flex justify-between font-medium">
                       <span className="text-slate-400">Mobile Phone:</span>
@@ -1176,7 +1176,7 @@ export default function StudentProfileModal({
                     </p>
                     <p className="flex justify-between font-medium">
                       <span className="text-slate-400">Case Allocation:</span>
-                      <span className="font-bold text-slate-800">Nansana West & Gganda Node</span>
+                      <span className="font-bold text-slate-800">Not recorded</span>
                     </p>
                   </div>
                 </div>
@@ -1465,7 +1465,7 @@ export default function StudentProfileModal({
             </div>
             <div>
               <p className="font-bold text-slate-700">Community Social Worker:</p>
-              <p className="text-slate-900">{student.communityWorker || 'Florence Namatovu'}</p>
+              <p className="text-slate-900">{student.communityWorker || 'Not recorded'}</p>
               <p className="font-mono text-slate-600">{student.workerContact || '+256 772 112233'}</p>
             </div>
           </div>
