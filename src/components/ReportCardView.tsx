@@ -3,7 +3,7 @@ import { Printer, Users, Calendar, Award, MapPin, Archive, Lock, CheckCircle2, H
 import QRCode from 'qrcode';
 import { Student, Mark, Teacher, AcademicYear, HistoricalReportCard } from '../types';
 import { getStudentClassForYear, getSubjectsForClass } from '../curriculum';
-import AshinagaLogo from './AshinagaLogo';
+import VLearningLogo from './VLearningLogo';
 
 interface ReportCardViewProps {
   students: Student[];
@@ -34,7 +34,7 @@ export default function ReportCardView({
   const getAuthToken = () => {
     if (teacher?.authToken) return teacher.authToken;
     try {
-      const stored = localStorage.getItem('school_sms_teacher');
+      const stored = localStorage.getItem('vlearning_sms_teacher');
       if (stored) return JSON.parse(stored).authToken;
     } catch {}
     return '';
@@ -534,7 +534,7 @@ export default function ReportCardView({
         >
           {/* SVG Watermark Background Centered behind the report card */}
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.035] pointer-events-none select-none z-0 scale-150">
-            <AshinagaLogo size={420} />
+            <VLearningLogo size={420} />
           </div>
 
           <div className="relative z-10 space-y-6">
@@ -550,7 +550,7 @@ export default function ReportCardView({
               
               {/* Logo in report card header */}
               <div className="flex justify-center py-2">
-                <AshinagaLogo size={100} />
+                <VLearningLogo size={100} />
               </div>
 
               <div className="text-xs text-slate-800 font-bold space-y-1">
@@ -765,7 +765,7 @@ export default function ReportCardView({
                   </div>
                 </div>
                 <div className="text-right text-[9px] text-slate-400 font-mono italic">
-                  Ashinaga Uganda Ledger ID
+                  V-Learning Uganda Ledger ID
                 </div>
               </div>
 

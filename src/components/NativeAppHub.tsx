@@ -395,7 +395,7 @@ export function NativeAppToolbar({ isOffline, setIsOffline, onLockScreen }: Nati
                     triggerVirtualHaptic();
                     setPwaInstalled(true);
                     setShowPwaModal(false);
-                    showNotificationBanner('App Installed', 'Ashinaga Uganda Rainbow House has been launched from your applications deck.');
+                    showNotificationBanner('App Installed', 'V-Learning Uganda has been launched from your applications deck.');
                   }}
                   className="flex-1 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-xl text-xs font-black cursor-pointer shadow-lg shadow-sky-500/10 transition-all"
                 >

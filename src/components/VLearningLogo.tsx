@@ -5,7 +5,7 @@ interface LogoProps {
   size?: number;
 }
 
-export default function AshinagaLogo({ className = '', size = 120 }: LogoProps) {
+export default function VLearningLogo({ className = '', size = 120 }: LogoProps) {
   return (
     <div className={`inline-flex items-center gap-2 select-none ${className}`}>
       <img
@@ -18,4 +18,3 @@ export default function AshinagaLogo({ className = '', size = 120 }: LogoProps) 
   );
 }
 
-export const VLearningLogo = AshinagaLogo;

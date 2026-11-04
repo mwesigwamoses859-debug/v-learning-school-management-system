@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { KeyRound, Loader2, LockKeyhole, ShieldCheck, UserRound } from 'lucide-react';
 import { Teacher } from '../types';
-import AshinagaLogo from './AshinagaLogo';
+import VLearningLogo from './VLearningLogo';
 
 interface LoginProps {
   onLoginSuccess: (teacher: Teacher) => void;
@@ -45,16 +45,16 @@ export default function Login({ onLoginSuccess }: LoginProps) {
 
   return (
     <main className="min-h-screen bg-[#f3f6fa] grid lg:grid-cols-[1.08fr_.92fr]">
-      <section className="hidden lg:flex flex-col justify-between bg-gradient-to-br from-[#06182c] via-[#092a4c] to-indigo-950 p-14 text-white">
+      <section className="hidden lg:flex flex-col justify-between bg-gradient-to-br from-[#24324b] via-[#47203c] to-[#be1373] p-14 text-white">
         <div className="flex items-center gap-3">
-          <AshinagaLogo size={58} className="rounded-2xl bg-white p-1" />
-          <div><p className="text-lg font-black">V-Learning SMS</p><p className="text-xs uppercase tracking-[.2em] text-indigo-200">School Portal</p></div>
+          <VLearningLogo size={128} className="rounded-2xl bg-white p-1" />
+          <div><p className="text-base font-black">V-Learning School Management System</p><p className="text-xs uppercase tracking-[.2em] text-indigo-200">School Portal</p></div>
         </div>
         <div className="max-w-xl">
           <span className="inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1 text-xs font-bold text-emerald-200">
             <ShieldCheck className="h-4 w-4" /> Role-protected access
           </span>
-          <h1 className="mt-6 text-5xl font-black leading-tight">One login. The correct workspace automatically.</h1>
+          <h1 className="mt-6 text-5xl font-black leading-tight">Learning connected.<br/>Records in one place.</h1>
           <p className="mt-5 text-slate-300">Headteachers and administrators receive full school tools. Teachers receive their assigned classes, subjects, marks and attendance.</p>
         </div>
         <p className="text-xs text-slate-500">V-Learning Uganda • School Management System</p>
@@ -62,7 +62,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
 
       <section className="flex items-center justify-center p-6 md:p-12">
         <div className="w-full max-w-md rounded-3xl border border-slate-100 bg-white p-8 shadow-xl">
-          <div className="flex items-center gap-3 lg:hidden mb-8"><AshinagaLogo size={60} /><strong>V-Learning SMS</strong></div>
+          <div className="flex items-center gap-3 lg:hidden mb-8"><VLearningLogo size={128} /><strong>V-Learning School Management System</strong></div>
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600"><LockKeyhole className="h-6 w-6" /></div>
           <p className="mt-6 text-xs font-black uppercase tracking-[.2em] text-indigo-600">Authorized personnel</p>
           <h2 className="mt-2 text-3xl font-black text-slate-900">Staff sign in</h2>
@@ -70,6 +70,8 @@ export default function Login({ onLoginSuccess }: LoginProps) {
 
           {error && <div role="alert" className="mt-5 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm font-semibold text-rose-700">{error}</div>}
 
+          <a href="https://v-learning-uganda-app.pages.dev/admin" className="mt-5 block rounded-xl bg-[#be1373] text-white text-center py-3 font-bold text-sm">Open through the learning administrator dashboard</a>
+          <p className="mt-3 text-xs text-slate-500">Administrators: sign in there, then choose Open school management.</p>
           <form onSubmit={signIn} className="mt-7 space-y-5">
             <label className="block">
               <span className="text-xs font-black uppercase tracking-wider text-slate-500">Staff username</span>

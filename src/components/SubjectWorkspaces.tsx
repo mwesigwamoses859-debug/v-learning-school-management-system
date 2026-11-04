@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { Student, Mark, Teacher, ClassName } from '../types';
 import { getSubjectsForClass } from '../curriculum';
-import AshinagaLogo from './AshinagaLogo';
+import VLearningLogo from './VLearningLogo';
 
 interface SubjectWorkspacesProps {
   students: Student[];
@@ -226,7 +226,7 @@ export default function SubjectWorkspaces({
         <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div className="flex items-center gap-4">
-            <AshinagaLogo size={56} className="bg-white p-1 rounded-2xl shadow-md shrink-0" />
+            <VLearningLogo size={56} className="bg-white p-1 rounded-2xl shadow-md shrink-0" />
             <div>
               <div className="flex items-center gap-2">
                 <span className="px-2.5 py-0.5 bg-indigo-500/30 text-indigo-200 text-[10px] font-black uppercase tracking-wider rounded-md border border-indigo-400/30">
@@ -254,7 +254,7 @@ export default function SubjectWorkspaces({
             <div className="font-extrabold text-white text-sm">{currentTeacher.name}</div>
             <div className="text-indigo-200 font-mono text-[11px] flex items-center gap-1">
               <Mail className="h-3 w-3 shrink-0" />
-              <span>{currentTeacher.email || `${currentTeacher.username}@ashinaga.or.ug`}</span>
+              <span>{currentTeacher.email || `${currentTeacher.username}@vlearning.invalid`}</span>
             </div>
           </div>
         </div>
@@ -331,7 +331,7 @@ export default function SubjectWorkspaces({
                   <div key={t.username} className="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200">
                     <div>
                       <strong className="text-slate-800 block text-xs">{t.name}</strong>
-                      <span className="text-slate-400 font-mono text-[10px]">{t.email || `${t.username}@ashinaga.or.ug`}</span>
+                      <span className="text-slate-400 font-mono text-[10px]">{t.email || `${t.username}@vlearning.invalid`}</span>
                     </div>
                     <span className="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[9px] font-black rounded uppercase">
                       {t.role || 'Teacher'}

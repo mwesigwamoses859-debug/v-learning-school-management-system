@@ -1,3 +1,4 @@
+import { initializeSchool } from '../shared/school-records.mjs';
 import { isSubjectForClass } from '../src/curriculum';
 
 type StaffRow = {
@@ -29,9 +30,6 @@ const json = (data: unknown, status = 200) =>
     status,
     headers: {
       'Cache-Control': 'no-store',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
     }
   });
 
@@ -85,27 +83,25 @@ const encodeBase64Url = (value: string) =>
 const decodeBase64Url = (value: string) =>
   decodeURIComponent(escape(atob(value.replace(/-/g, '+').replace(/_/g, '/'))));
 
-async function issueSession(env: Env, staff: StaffRow) {
-  const payload = encodeBase64Url(JSON.stringify({
-    sub: staff.username,
-    email: staff.email,
-    role: staff.role,
-    exp: Date.now() + 12 * 60 * 60 * 1000
-  }));
-  return `${payload}.${await hmac(env.SESSION_SECRET || 'v-learning-uganda-sms-secret-2026', payload)}`;
+const sessionHash = async (token: string) => bytesToHex(await crypto.subtle.digest('SHA-256', textEncoder.encode(token)));
+const newToken = () => bytesToHex(crypto.getRandomValues(new Uint8Array(32)).buffer);
+const staffCookie = (token: string) => `vl_school=${token}; Path=/api; HttpOnly; Secure; SameSite=Strict; Max-Age=43200`;
+function sessionToken(request: Request) {
+ const bearer = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+ return bearer && /^[a-f0-9]{64}$/.test(bearer) ? bearer : request.headers.get('Cookie')?.match(/(?:^|;\s*)vl_school=([a-f0-9]{64})(?:;|$)/)?.[1];
 }
-
+async function issueSession(env: Env, staff: StaffRow) {
+ const token = newToken();
+ await env.DB.batch([
+  env.DB.prepare('DELETE FROM school_staff_sessions WHERE expires<=?').bind(Date.now()),
+  env.DB.prepare('INSERT INTO school_staff_sessions(token_hash,username,expires) VALUES(?,?,?)').bind(await sessionHash(token),staff.username,Date.now()+12*3600000)
+ ]);
+ return token;
+}
 async function getSession(request: Request, env: Env) {
-  const token = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-  if (!token) return null;
-  const [payload, signature] = token.split('.');
-  if (!payload || !signature || (await hmac(env.SESSION_SECRET || 'v-learning-uganda-sms-secret-2026', payload)) !== signature) return null;
-  try {
-    const session = JSON.parse(decodeBase64Url(payload));
-    return session.exp > Date.now() ? session : null;
-  } catch {
-    return null;
-  }
+ const token=sessionToken(request); if(!token)return null;
+ const row=await env.DB.prepare('SELECT s.username AS sub,t.email,t.role,t.must_change_password FROM school_staff_sessions s JOIN staff t ON t.username=s.username AND t.active=1 WHERE s.token_hash=? AND s.expires>?').bind(await sessionHash(token),Date.now()).first() as any;
+ return row || null;
 }
 
 const toTeacher = (staff: StaffRow, assignments: StaffAssignment[] = []) => ({
@@ -465,10 +461,11 @@ async function checkAndApplyAutomaticDecemberRollover(env: Env) {
 }
 
 async function sendCode(request: Request, env: Env) {
+  if (!env.SESSION_SECRET || !env.RESEND_API_KEY) return json({success:false,message:'Email sign-in is not configured. Use your staff password or the learning administrator dashboard.'},503);
   const body = await readBody(request);
   const email = normalizeEmail(body.email);
-  if (!email.endsWith('@ashinaga.org')) {
-    return json({ success: false, message: 'Enter your official @ashinaga.org email address.' }, 400);
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    return json({ success: false, message: 'Enter your registered staff email address.' }, 400);
   }
 
   const staff = await env.DB.prepare(
@@ -480,7 +477,7 @@ async function sendCode(request: Request, env: Env) {
 
   const code = crypto.getRandomValues(new Uint32Array(1))[0] % 900000 + 100000;
   const codeText = String(code);
-  const codeHash = await hmac(env.SESSION_SECRET || 'v-learning-uganda-sms-secret-2026', `${email}:${codeText}`);
+  const codeHash = await hmac(env.SESSION_SECRET, `${email}:${codeText}`);
   const now = Date.now();
   await env.DB.prepare(
     `INSERT INTO login_codes (email, code_hash, expires_at, attempts, requested_at)
@@ -494,8 +491,8 @@ async function sendCode(request: Request, env: Env) {
     body: JSON.stringify({
       from: env.EMAIL_FROM,
       to: [email],
-      subject: 'Your Rainbow House sign-in code',
-      html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto"><h2>Rainbow House staff sign-in</h2><p>Hello ${staff.name},</p><p>Your confirmation code is:</p><p style="font-size:32px;font-weight:800;letter-spacing:8px;color:#4f46e5">${codeText}</p><p>This code expires in 10 minutes.</p></div>`
+      subject: 'Your V-Learning Uganda sign-in code',
+      html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto"><h2>V-Learning Uganda staff sign-in</h2><p>Hello ${staff.name},</p><p>Your confirmation code is:</p><p style="font-size:32px;font-weight:800;letter-spacing:8px;color:#4f46e5">${codeText}</p><p>This code expires in 10 minutes.</p></div>`
     })
   });
   if (!mailResponse.ok) {
@@ -507,6 +504,7 @@ async function sendCode(request: Request, env: Env) {
 }
 
 async function verifyCode(request: Request, env: Env) {
+  if (!env.SESSION_SECRET || !env.RESEND_API_KEY) return json({success:false,message:'Email sign-in is not configured. Use your staff password or the learning administrator dashboard.'},503);
   const body = await readBody(request);
   const email = normalizeEmail(body.email);
   const suppliedCode = String(body.code || '').trim();
@@ -520,7 +518,7 @@ async function verifyCode(request: Request, env: Env) {
     await env.DB.prepare('DELETE FROM login_codes WHERE email = ?').bind(email).run();
     return json({ success: false, message: 'Too many attempts. Request a new code.' }, 429);
   }
-  const suppliedHash = await hmac(env.SESSION_SECRET || 'v-learning-uganda-sms-secret-2026', `${email}:${suppliedCode}`);
+  const suppliedHash = await hmac(env.SESSION_SECRET, `${email}:${suppliedCode}`);
   if (suppliedHash !== record.code_hash) {
     await env.DB.prepare('UPDATE login_codes SET attempts = attempts + 1 WHERE email = ?').bind(email).run();
     return json({ success: false, message: 'Invalid confirmation code.' }, 400);
@@ -587,226 +585,61 @@ async function passwordLogin(request: Request, env: Env) {
     .bind(Date.now(), staff.username).run();
   const assignments = await getAssignments(env, staff.username);
   await writeAudit(env, request, { sub: staff.username, role: staff.role }, 'LOGIN_SUCCESS', 'staff', staff.username);
-  return json({ success: true, teacher: toTeacher(staff, assignments), token: await issueSession(env, staff) });
+  const token=await issueSession(env,staff);
+  return Response.json({success:true,teacher:toTeacher(staff,assignments),token},{headers:{'Set-Cookie':staffCookie(token),'Cache-Control':'no-store'}});
 }
 
 async function api(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
-  if (request.method === 'OPTIONS') {
-    return new Response(null, {
-      status: 204,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
-      }
-    });
+  await initializeSchool(env.DB);
+  if (request.method === 'OPTIONS') return new Response(null,{status:204});
+  if (!['GET','HEAD'].includes(request.method) && request.headers.has('Cookie') && !request.headers.get('Authorization')?.match(/^Bearer [a-f0-9]{64}$/)) {
+   if(request.headers.get('Origin')!==url.origin || request.headers.get('Sec-Fetch-Site')==='cross-site') return json({success:false,message:'Open this school website before making changes.'},403);
   }
-
-  if (request.method === 'GET' && url.pathname === '/api/health') return json({ ok: true, storage: 'D1' });
-
-  if (request.method === 'GET' && url.pathname === '/api/vlearning/status') {
-    const studentsCount = await env.DB.prepare('SELECT COUNT(*) as count FROM students').first<{count: number}>();
-    const marksCount = await env.DB.prepare('SELECT COUNT(*) as count FROM marks').first<{count: number}>();
-    return json({
-      ok: true,
-      system: 'V-Learning School Management System',
-      students: studentsCount?.count || 0,
-      marks: marksCount?.count || 0,
-      timestamp: Date.now()
-    });
+  if(url.pathname.startsWith('/api/vlearning/')) return json({success:false,message:'Public synchronization is disabled. Records arrive through the private database connection.'},403);
+  if(request.method==='GET' && url.pathname==='/api/health')return json({ok:true,system:'V-Learning School Management System',storage:'D1'});
+  if(request.method==='POST' && url.pathname==='/api/auth/platform-login') {
+   if(request.headers.get('Origin')!==url.origin)return json({success:false,message:'Open this school website to sign in.'},403);
+   const body=await readBody(request);const code=String(body.code||'');
+   if(!/^[a-f0-9]{64}$/.test(code))return json({success:false,message:'Sign in through the V-Learning administrator dashboard.'},401);
+   const consumed=await env.DB.prepare('DELETE FROM school_access_codes WHERE code_hash=? AND expires>? RETURNING code_hash').bind(await sessionHash(code),Date.now()).first();
+   if(!consumed)return json({success:false,message:'This sign-in link has expired. Open School management from the learning administrator dashboard again.'},401);
+   await env.DB.prepare(`INSERT INTO staff(username,name,email,role,subjects,classes,active_terms,active) VALUES('platform-owner','V-Learning Administrator','platform-owner@vlearning.invalid','Headteacher','["All"]','["P.1","P.2","P.3","P.4","P.5","P.6","P.7","S.1","S.2","S.3","S.4","S.5","S.6"]','[1,2,3]',1) ON CONFLICT(username) DO UPDATE SET active=1`).run();
+   const staff=await env.DB.prepare("SELECT * FROM staff WHERE username='platform-owner'").first() as StaffRow;
+   const token=await issueSession(env,staff);
+   return Response.json({success:true,teacher:toTeacher(staff)},{headers:{'Set-Cookie':staffCookie(token),'Cache-Control':'no-store'}});
   }
-
-  if (request.method === 'POST' && url.pathname === '/api/vlearning/student-sync') {
-    const body = await readBody(request);
-    const rawName = String(body.name || body.studentName || body.displayName || '').trim();
-    if (!rawName) return json({ success: false, message: 'Student name is required.' }, 400);
-
-    const rawClass = String(body.className || body.classLevel || 'P7').trim().toUpperCase();
-    let className = rawClass;
-    if (/^[PS][1-7]$/.test(rawClass)) {
-      className = `${rawClass[0]}.${rawClass.slice(1)}`;
-    }
-
-    const username = String(body.username || '').trim().toLowerCase();
-    const school = String(body.school || body.schoolName || 'V-Learning Uganda Partner School').trim();
-    const phone = String(body.phone || body.phoneNumber || '').trim();
-    const email = String(body.email || '').trim();
-
-    const parts = rawName.split(/\s+/);
-    const surname = parts[0] || 'Learner';
-    const otherNames = parts.slice(1).join(' ') || surname;
-
-    const classNum = parseInt(className.replace(/\D/g, '')) || 7;
-    const isSec = className.startsWith('S.');
-    const estimatedAge = isSec ? 13 + classNum : 5 + classNum;
-    const birthYear = new Date().getFullYear() - estimatedAge;
-    const dateOfBirth = `${birthYear}-01-15`;
-
-    const existing = await env.DB.prepare('SELECT id, payload FROM students').all();
-    let matchId = '';
-    let existingStudent: any = null;
-
-    for (const row of existing.results as any[]) {
-      try {
-        const parsed = JSON.parse(row.payload);
-        if (username && parsed.vlearningUsername === username) {
-          matchId = row.id;
-          existingStudent = parsed;
-          break;
-        }
-        if (
-          parsed.surname?.toLowerCase() === surname.toLowerCase() &&
-          parsed.otherNames?.toLowerCase() === otherNames.toLowerCase() &&
-          parsed.className === className
-        ) {
-          matchId = row.id;
-          existingStudent = parsed;
-          break;
-        }
-      } catch (e) {}
-    }
-
-    const now = Date.now();
-    let studentRecord: any;
-
-    if (matchId && existingStudent) {
-      studentRecord = {
-        ...existingStudent,
-        className,
-        school,
-        guardianContact: phone || existingStudent.guardianContact || '0770000000',
-        email: email || existingStudent.email,
-        vlearningUsername: username || existingStudent.vlearningUsername,
-        updatedAt: now
-      };
-      await env.DB.prepare('UPDATE students SET payload = ?, updated_at = ? WHERE id = ?')
-        .bind(JSON.stringify(studentRecord), now, matchId).run();
-    } else {
-      const studentId = `st-vl-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
-      studentRecord = {
-        id: studentId,
-        surname,
-        otherNames,
-        gender: body.gender || 'Male',
-        dateOfBirth,
-        className,
-        yearOfEntry: new Date().getFullYear(),
-        photo: '',
-        guardianName: school || 'School / Guardian',
-        guardianContact: phone || '0770000000',
-        school,
-        communityWorker: 'V-Learning Platform',
-        workerContact: '0772000000',
-        zoneInNansana: 'V-Learning Digital Portal',
-        hasScholarship: false,
-        vlearningUsername: username,
-        createdAt: now,
-        updatedAt: now
-      };
-      await env.DB.prepare('INSERT INTO students (id, payload, created_at, updated_at) VALUES (?, ?, ?, ?)')
-        .bind(studentId, JSON.stringify(studentRecord), now, now).run();
-    }
-
-    return json({ success: true, student: studentRecord });
+  if(request.method==='POST' && url.pathname==='/api/auth/logout') {
+   const token=sessionToken(request);if(token)await env.DB.prepare('DELETE FROM school_staff_sessions WHERE token_hash=?').bind(await sessionHash(token)).run();
+   return Response.json({success:true},{headers:{'Set-Cookie':'vl_school=; Path=/api; HttpOnly; Secure; SameSite=Strict; Max-Age=0','Cache-Control':'no-store'}});
   }
-
-  if (request.method === 'POST' && url.pathname === '/api/vlearning/marks-sync') {
-    const body = await readBody(request);
-    const username = String(body.studentUsername || body.username || '').trim().toLowerCase();
-    const rawName = String(body.studentName || body.name || '').trim();
-    const rawClass = String(body.className || body.classLevel || 'P7').trim().toUpperCase();
-    let className = rawClass;
-    if (/^[PS][1-7]$/.test(rawClass)) {
-      className = `${rawClass[0]}.${rawClass.slice(1)}`;
-    }
-
-    const subject = String(body.subject || 'General Assessment').trim();
-    const rawScore = Number(body.percentage ?? body.score ?? 0);
-    const score = Math.max(0, Math.min(100, Math.round(rawScore)));
-    const term = [1, 2, 3].includes(Number(body.term)) ? Number(body.term) : 1;
-    const year = Number(body.year) || new Date().getFullYear();
-
-    const existing = await env.DB.prepare('SELECT id, payload FROM students').all();
-    let studentId = '';
-    let studentPayload: any = null;
-
-    for (const row of existing.results as any[]) {
-      try {
-        const parsed = JSON.parse(row.payload);
-        if (username && parsed.vlearningUsername === username) {
-          studentId = row.id;
-          studentPayload = parsed;
-          break;
-        }
-        if (rawName && `${parsed.surname} ${parsed.otherNames}`.toLowerCase().includes(rawName.toLowerCase())) {
-          studentId = row.id;
-          studentPayload = parsed;
-          break;
-        }
-      } catch (e) {}
-    }
-
-    const now = Date.now();
-    if (!studentId) {
-      const parts = (rawName || username || 'Learner').split(/\s+/);
-      studentId = `st-vl-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
-      studentPayload = {
-        id: studentId,
-        surname: parts[0] || 'Learner',
-        otherNames: parts.slice(1).join(' ') || 'Student',
-        gender: 'Male',
-        dateOfBirth: `${year - 13}-01-01`,
-        className,
-        yearOfEntry: year,
-        photo: '',
-        guardianName: 'V-Learning Learner',
-        guardianContact: '0770000000',
-        school: 'V-Learning Uganda',
-        communityWorker: 'V-Learning Platform',
-        workerContact: '0772000000',
-        zoneInNansana: 'V-Learning Digital Portal',
-        hasScholarship: false,
-        vlearningUsername: username,
-        createdAt: now,
-        updatedAt: now
-      };
-      await env.DB.prepare('INSERT INTO students (id, payload, created_at, updated_at) VALUES (?, ?, ?, ?)')
-        .bind(studentId, JSON.stringify(studentPayload), now, now).run();
-    }
-
-    const markId = `mark-${studentId}-${subject.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${term}-${year}`;
-    const markPayload = {
-      id: markId,
-      studentId,
-      subject,
-      term,
-      year,
-      score,
-      botScore: score,
-      motScore: score,
-      eotScore: score,
-      teacherName: 'V-Learning Quiz Engine',
-      quizTitle: body.quizTitle || 'V-Learning Online Practice',
-      recordedAt: now
-    };
-
-    await env.DB.prepare(
-      `INSERT INTO marks (id, student_id, subject, term, year, payload, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?)
-       ON CONFLICT(student_id, subject, term, year) DO UPDATE SET
-         payload = excluded.payload, updated_at = excluded.updated_at`
-    ).bind(markId, studentId, subject, term, year, JSON.stringify(markPayload), now).run();
-
-    return json({ success: true, mark: markPayload });
-  }
-
   if (request.method === 'POST' && url.pathname === '/api/auth/login') return passwordLogin(request, env);
   if (request.method === 'POST' && url.pathname === '/api/auth/send-code') return sendCode(request, env);
   if (request.method === 'POST' && url.pathname === '/api/auth/verify-code') return verifyCode(request, env);
 
   const session = await getSession(request, env);
   if (!session) return json({ success: false, message: 'Your session has expired. Please sign in again.' }, 401);
+  if(request.method==='GET' && url.pathname==='/api/auth/session') {
+   const staff=await env.DB.prepare('SELECT * FROM staff WHERE username=? AND active=1').bind(session.sub).first() as StaffRow;
+   return json({teacher:toTeacher(staff,await getAssignments(env,staff.username))});
+  }
+  if(session.must_change_password && url.pathname!=='/api/auth/change-password')return json({success:false,message:'Change your initial staff password before opening school records.'},403);
+  if(request.method==='GET' && url.pathname==='/api/online-learning') {
+   if(!isAdministrator(session.role))return json({message:'Administrator access required.'},403);
+   const page=Math.max(1,Math.floor(Number(url.searchParams.get('page'))||1));
+   const q=(url.searchParams.get('q')||'').slice(0,100);const level=url.searchParams.get('class')||'';
+   const where=" WHERE (display_name LIKE ? OR username LIKE ? OR school_name LIKE ?) AND (?='' OR class_level=?)";
+   const args=['%'+q+'%','%'+q+'%','%'+q+'%',level,level];
+   const [students,totals,results,count,connection]=await Promise.all([
+    env.DB.prepare('SELECT * FROM vlearning_students'+where+' ORDER BY created_at DESC,learner_id LIMIT 50 OFFSET ?').bind(...args,(page-1)*50).all(),
+    env.DB.prepare('SELECT (SELECT COUNT(*) FROM vlearning_students) AS students,(SELECT COUNT(*) FROM vlearning_quiz_results) AS attempts').first(),
+    env.DB.prepare(`SELECT r.*,s.display_name,s.username,s.school_name FROM vlearning_quiz_results r LEFT JOIN vlearning_students s ON s.learner_id=r.learner_id ORDER BY r.created_at DESC,r.id LIMIT 200`).all(),
+    env.DB.prepare('SELECT COUNT(*) AS total FROM vlearning_students'+where).bind(...args).first(),
+    env.DB.prepare('SELECT last_synced_at FROM school_connection WHERE id=1').first()
+   ]);
+   return json({students:students.results,results:results.results,totals,count,page,connection});
+  }
+
 
   if (request.method === 'POST' && url.pathname === '/api/auth/change-password') {
     const body = await readBody(request);
@@ -824,6 +657,7 @@ async function api(request: Request, env: Env): Promise<Response> {
       return json({ success: false, message: 'Current password is incorrect.' }, 401);
     }
     await setPassword(env, session.sub, newPassword, false);
+    await env.DB.prepare('DELETE FROM school_staff_sessions WHERE username=?').bind(session.sub).run();
     await writeAudit(env, request, session, 'PASSWORD_CHANGED', 'staff', session.sub);
     return json({ success: true });
   }

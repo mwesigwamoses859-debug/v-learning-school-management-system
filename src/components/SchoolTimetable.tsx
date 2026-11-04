@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { Student, ClassName } from '../types';
 import { getSubjectsForClass } from '../curriculum';
-import AshinagaLogo from './AshinagaLogo';
+import VLearningLogo from './VLearningLogo';
 
 interface TimetableSlot {
   id: string;
@@ -42,8 +42,8 @@ export default function SchoolTimetable({ teacherClasses, isAdmin }: SchoolTimet
   const [formDay, setFormDay] = useState<'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday'>('Monday');
   const [formTimeSlot, setFormTimeSlot] = useState('08:30 - 09:30');
   const [formSubject, setFormSubject] = useState('Mathematics');
-  const [formTeacher, setFormTeacher] = useState('Madam Namutebi Proscovia');
-  const [formRoom, setFormRoom] = useState('Stream A Room');
+  const [formTeacher, setFormTeacher] = useState('');
+  const [formRoom, setFormRoom] = useState('');
   const classSubjects = getSubjectsForClass(selectedClass);
 
   useEffect(() => {
@@ -134,7 +134,7 @@ export default function SchoolTimetable({ teacherClasses, isAdmin }: SchoolTimet
       {/* Header section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sky-150 pb-5 print:hidden">
         <div className="flex items-center gap-3">
-          <AshinagaLogo size={50} className="shrink-0 bg-white p-1 rounded-xl shadow-xs border border-slate-100" />
+          <VLearningLogo size={50} className="shrink-0 bg-white p-1 rounded-xl shadow-xs border border-slate-100" />
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-sky-50 text-sky-700 rounded-full text-[10px] font-black uppercase tracking-wider mb-2">
               <Sparkles className="h-3 w-3 text-sky-500 animate-spin" /> School Schedule Engine

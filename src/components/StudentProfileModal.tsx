@@ -35,7 +35,7 @@ import {
 import { Student, Mark, ClassName } from '../types';
 import { getStudentClassForYear } from '../curriculum';
 import StudentQrCodeModal from './StudentQrCodeModal';
-import AshinagaLogo from './AshinagaLogo';
+import VLearningLogo from './VLearningLogo';
 import { evaluateScholarshipEligibility } from '../utils/scholarshipEligibility';
 import {
   ResponsiveContainer,
@@ -100,39 +100,15 @@ export default function StudentProfileModal({
   const [showConfigThresholds, setShowConfigThresholds] = useState(false);
 
   // Loaded/Mocked detailed datasets for the 360-degree profile
-  const [attendanceLogs, setAttendanceLogs] = useState<any[]>([
-    { date: '2026-07-15', status: 'Present', notes: 'Attended full day' },
-    { date: '2026-07-14', status: 'Present', notes: 'Attended full day' },
-    { date: '2026-07-13', status: 'Present', notes: 'Attended full day' },
-    { date: '2026-07-10', status: 'Absent', notes: 'Malaria fever treatment' },
-    { date: '2026-07-09', status: 'Absent', notes: 'Family emergency' },
-    { date: '2026-07-08', status: 'Absent', notes: 'No transport fees' },
-    { date: '2026-07-07', status: 'Present', notes: 'Attended full day' },
-    { date: '2026-07-06', status: 'Present', notes: 'Attended full day' }
-  ]);
+  const [attendanceLogs, setAttendanceLogs] = useState<any[]>([]);
 
-  const [supportRecords, setSupportRecords] = useState<any[]>([
-    { term: 'Term 2, 2026', items: ['School Uniform (2 pairs)', 'Standard Stationery Kit', 'Daily Porridge Meal Plan'], status: 'Disbursed' },
-    { term: 'Term 1, 2026', items: ['School Uniform (1 pair)', 'Core Primary Textbook Bundle', 'PTA Fee Scholarship Support'], status: 'Disbursed' },
-    { term: 'Term 3, 2025', items: ['Math and Science Exercise Books', 'Daily Porridge Meal Plan'], status: 'Disbursed' }
-  ]);
+  const [supportRecords, setSupportRecords] = useState<any[]>([]);
 
-  const [visitLogs, setVisitLogs] = useState<any[]>([
-    { date: '2026-06-18', worker: student.communityWorker || 'Florence Namatovu', observations: 'Slightly congested house in Gganda, mother has a small fruit stall. Child seems keen to read but lacks adequate lighting at night.', challenges: 'Water sanitation nearby is poor. Family needs study lamp.', referrals: 'Allocated solar-charged study lantern.' },
-    { date: '2026-04-10', worker: student.communityWorker || 'Florence Namatovu', observations: 'Visibly healthy environment, guardian is supportive and tracks school report card actively.', challenges: 'None major.', referrals: 'Encouraged to continue regular attendance.' }
-  ]);
+  const [visitLogs, setVisitLogs] = useState<any[]>([]);
 
-  const [documents, setDocuments] = useState<any[]>([
-    { id: 'doc-1', name: 'Parental Consent Form.pdf', category: 'Consent', size: '240 KB', dateAdded: '2025-01-15' },
-    { id: 'doc-2', name: 'Birth Certificate Copied.jpg', category: 'Identification', size: '1.2 MB', dateAdded: '2025-01-15' },
-    { id: 'doc-3', name: 'Scholarship Grant Agreement.pdf', category: 'Contract', size: '412 KB', dateAdded: '2025-02-10' }
-  ]);
+  const [documents, setDocuments] = useState<any[]>([]);
 
-  const [historyLogs, setHistoryLogs] = useState<any[]>([
-    { date: '2026-01-05', event: 'Promoted to Class ' + student.className, category: 'Academic', author: 'School Registrar' },
-    { date: '2025-02-10', event: 'Scholarship Support Approved & Finalized', category: 'Support', author: 'Nansana Sponsorship Desk' },
-    { date: '2025-01-15', event: 'Pupil Registered & Home Profile Intake Completed', category: 'Intake', author: student.communityWorker || 'Florence Namatovu' }
-  ]);
+  const [historyLogs, setHistoryLogs] = useState<any[]>([]);
 
   const [newDocName, setNewDocName] = useState('');
   const [newDocCat, setNewDocCat] = useState('Consent');
@@ -180,7 +156,7 @@ export default function StudentProfileModal({
     attendanceLogs.slice(0, 3).every(l => l.status === 'Absent');
 
   const attendanceRate = Math.round(
-    (attendanceLogs.filter(l => l.status === 'Present').length / attendanceLogs.length) * 100
+    (attendanceLogs.length ? attendanceLogs.filter(l => l.status === 'Present').length / attendanceLogs.length : 0) * 100
   ) || 92;
 
   const academicDrop = avgAcademicScore < thresholds.minAcademicScore && studentMarks.length > 0;
@@ -1402,7 +1378,7 @@ export default function StudentProfileModal({
 
         {/* Modal footer Section */}
         <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-between items-center rounded-b-3xl shrink-0 text-[10px] font-bold text-slate-400 uppercase font-mono tracking-wider px-6">
-          <span>Ashinaga Child Protection Register</span>
+          <span>V-Learning Child Protection Register</span>
           <span>Nansana District Node Sync Active</span>
         </div>
 
@@ -1421,10 +1397,10 @@ export default function StudentProfileModal({
         {/* Printable Header */}
         <div className="flex items-center justify-between border-b-2 border-slate-900 pb-4 mb-6">
           <div className="flex items-center gap-4">
-            <AshinagaLogo size={56} />
+            <VLearningLogo size={56} />
             <div>
               <h1 className="text-lg font-black uppercase tracking-tight text-slate-900">
-                Ashinaga Uganda Rainbow House
+                V-Learning Uganda
               </h1>
               <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
                 Terakoya Education Programme • Student 360° Summary Sheet

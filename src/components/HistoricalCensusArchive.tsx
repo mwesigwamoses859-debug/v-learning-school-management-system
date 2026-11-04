@@ -1,13 +1,13 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { 
-  Users, 
-  FileSpreadsheet, 
-  Calendar, 
-  Download, 
-  CheckCircle2, 
-  Lock, 
+import {
+  Users,
+  FileSpreadsheet,
+  Calendar,
+  Download,
+  CheckCircle2,
+  Lock,
   Unlock,
-  Building2, 
+  Building2,
   Search,
   Award,
   BarChart3,
@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { Student, Mark, ClassName } from '../types';
-import AshinagaLogo from './AshinagaLogo';
+import VLearningLogo from './VLearningLogo';
 
 interface HistoricalCensusArchiveProps {
   students: Student[];
@@ -68,7 +68,7 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
   // Load custom saved snapshots from localStorage and remote database
   const [savedSnapshots, setSavedSnapshots] = useState<Record<number, CensusSnapshot>>(() => {
     try {
-      const stored = localStorage.getItem('ashinaga_census_snapshots');
+      const stored = localStorage.getItem('vlearning_census_snapshots');
       return stored ? JSON.parse(stored) : {};
     } catch {
       return {};
@@ -95,7 +95,7 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
           setSavedSnapshots(prev => {
             const merged = { ...prev, ...loaded };
             try {
-              localStorage.setItem('ashinaga_census_snapshots', JSON.stringify(merged));
+              localStorage.setItem('vlearning_census_snapshots', JSON.stringify(merged));
             } catch {}
             return merged;
           });
@@ -151,14 +151,14 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
   const persistSnapshots = async (updated: Record<number, CensusSnapshot>) => {
     setSavedSnapshots(updated);
     try {
-      localStorage.setItem('ashinaga_census_snapshots', JSON.stringify(updated));
+      localStorage.setItem('vlearning_census_snapshots', JSON.stringify(updated));
     } catch (err) {
       console.error('Failed to save snapshots to localStorage', err);
     }
 
     try {
       let token = '';
-      const stored = localStorage.getItem('school_sms_teacher');
+      const stored = localStorage.getItem('vlearning_sms_teacher');
       if (stored) token = JSON.parse(stored).authToken || '';
 
       for (const [yr, snap] of Object.entries(updated)) {
@@ -258,7 +258,7 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
         const idKey = findKey(['id', 'pupilid', 'studentid', 'admissionno', 'regno', 'number']);
 
         const classCounts: Record<ClassName, number> = {
-          'P.1': 0, 'P.2': 0, 'P.3': 0, 'P.4': 0, 'P.5': 0, 'P.6': 0, 'P.7': 0
+          'P.1': 0, 'P.2': 0, 'P.3': 0, 'P.4': 0, 'P.5': 0, 'P.6': 0, 'P.7': 0, 'S.1':0, 'S.2':0, 'S.3':0, 'S.4':0, 'S.5':0, 'S.6':0
         };
         let boys = 0;
         let girls = 0;
@@ -286,8 +286,8 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
           const hasScholarship = normalizeScholarship(scholarshipKey ? row[scholarshipKey] : false);
           if (hasScholarship) scholars += 1;
 
-          const id = idKey && row[idKey] 
-            ? String(row[idKey]).trim() 
+          const id = idKey && row[idKey]
+            ? String(row[idKey]).trim()
             : `RH-${uploadTargetYear}-${String(idx + 1).padStart(3, '0')}`;
 
           return {
@@ -303,7 +303,7 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
             guardianContact: contactKey && row[contactKey] ? String(row[contactKey]).trim() : 'N/A',
             zone: zoneKey && row[zoneKey] ? String(row[zoneKey]).trim() : 'Nansana',
             hasScholarship,
-            communityWorker: 'Ashinaga Staff'
+            communityWorker: 'V-Learning Staff'
           };
         });
 
@@ -410,51 +410,11 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
       'Scholarship Status (Yes/No)'
     ];
 
-    const sampleRows = [
-      [
-        'RH-2023-001',
-        'Mukasa',
-        'John Baptist',
-        'Male',
-        'P.5',
-        '2014-05-12',
-        2021,
-        'Namatovu Florence',
-        '+256 702 112233',
-        'Nabweru',
-        'Yes'
-      ],
-      [
-        'RH-2023-002',
-        'Nalweyiso',
-        'Sarah Peace',
-        'Female',
-        'P.6',
-        '2013-09-24',
-        2020,
-        'Kato Joseph',
-        '+256 772 445566',
-        'Gganda',
-        'No'
-      ],
-      [
-        'RH-2023-003',
-        'Atwine',
-        'Patience',
-        'Female',
-        'P.7',
-        '2012-11-03',
-        2019,
-        'Babirye Harriet',
-        '+256 752 998877',
-        'Wamala',
-        'Yes'
-      ]
-    ];
+    const sampleRows: string[][] = [];
 
     const ws = XLSX.utils.aoa_to_sheet([templateHeaders, ...sampleRows]);
     XLSX.utils.book_append_sheet(wb, ws, 'Student Archive Template');
-    XLSX.writeFile(wb, 'Ashinaga_Historical_Student_Archive_Template.xlsx');
+    XLSX.writeFile(wb, 'V-Learning_Historical_Student_Archive_Template.xlsx');
   };
 
   // Export Selected Year Archive to Excel (.xlsx)
@@ -564,7 +524,7 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
     ]);
 
     XLSX.utils.book_append_sheet(wb, ws, 'Multi-Year Census Summary');
-    XLSX.writeFile(wb, 'Ashinaga_MultiYear_Historical_Census_Ledger.xlsx');
+    XLSX.writeFile(wb, 'V-Learning_MultiYear_Historical_Census_Ledger.xlsx');
   };
 
   // Currently selected year snapshot
@@ -574,7 +534,7 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
   const displayRoster = useMemo(() => {
     if (!currentSnapshot) return [];
     return currentSnapshot.students.filter(student => {
-      const matchesSearch = 
+      const matchesSearch =
         student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         student.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (student.zone && student.zone.toLowerCase().includes(searchQuery.toLowerCase())) ||
@@ -582,7 +542,7 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
 
       const matchesClass = selectedClassFilter === 'All' || student.className === selectedClassFilter;
       const matchesGender = selectedGenderFilter === 'All' || student.gender === selectedGenderFilter;
-      const matchesScholarship = 
+      const matchesScholarship =
         selectedScholarshipFilter === 'All' ||
         (selectedScholarshipFilter === 'Beneficiary' && student.hasScholarship) ||
         (selectedScholarshipFilter === 'Standard' && !student.hasScholarship);
@@ -593,16 +553,16 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
 
   return (
     <div id="historical_census_archive_view" className="p-6 md:p-8 space-y-6 font-sans max-w-7xl mx-auto">
-      
+
       {/* Header Banner */}
       <header className="rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 md:p-8 text-white shadow-xl relative overflow-hidden border border-indigo-900/40">
         <div className="absolute right-0 top-0 opacity-10 pointer-events-none p-6">
           <Building2 className="h-64 w-64 text-indigo-400" />
         </div>
-        
+
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <AshinagaLogo size={56} className="bg-white p-1 rounded-2xl shadow-md shrink-0" />
+            <VLearningLogo size={56} className="bg-white p-1 rounded-2xl shadow-md shrink-0" />
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-400/20 text-amber-300 border border-amber-400/30 rounded-full text-[10px] font-black uppercase tracking-widest mb-1.5">
                 <BookmarkPlus className="h-3 w-3 text-amber-400" /> Multi-Year Historical Archive
@@ -656,8 +616,8 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
       {/* Notifications */}
       {notification && (
         <div className={`p-4 rounded-2xl text-xs font-bold flex items-center justify-between shadow-sm animate-fade-in ${
-          notification.type === 'success' 
-            ? 'bg-emerald-50 text-emerald-900 border border-emerald-200' 
+          notification.type === 'success'
+            ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
             : notification.type === 'error'
             ? 'bg-rose-50 text-rose-900 border border-rose-200'
             : 'bg-indigo-50 text-indigo-900 border border-indigo-200'
@@ -733,7 +693,7 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
       ) : (
         /* Populated Dashboard: When at least one year exists */
         <div className="space-y-6">
-          
+
           {/* Year Switcher Bar */}
           <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
@@ -842,7 +802,7 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
 
               {/* KPI Stat Cards for Selected Year */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                
+
                 {/* Total Enrollment */}
                 <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm relative overflow-hidden">
                   <div className="flex items-center justify-between mb-2">
@@ -867,16 +827,16 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
                       <span className="text-pink-600">{currentSnapshot.genderCounts.Female} Girls</span>
                     </div>
                   </div>
-                  
+
                   {/* Visual ratio bar */}
                   <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden flex mt-3">
-                    <div 
-                      className="bg-blue-500 h-full transition-all" 
+                    <div
+                      className="bg-blue-500 h-full transition-all"
                       style={{ width: `${currentSnapshot.totalStudents ? (currentSnapshot.genderCounts.Male / currentSnapshot.totalStudents) * 100 : 50}%` }}
                       title={`Boys: ${currentSnapshot.genderCounts.Male}`}
                     />
-                    <div 
-                      className="bg-pink-500 h-full transition-all" 
+                    <div
+                      className="bg-pink-500 h-full transition-all"
                       style={{ width: `${currentSnapshot.totalStudents ? (currentSnapshot.genderCounts.Female / currentSnapshot.totalStudents) * 100 : 50}%` }}
                       title={`Girls: ${currentSnapshot.genderCounts.Female}`}
                     />
@@ -902,8 +862,8 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
                     {currentSnapshot.scholarshipCount} <span className="text-xs font-medium text-amber-600">Scholars</span>
                   </h3>
                   <p className="text-[11px] text-slate-500 mt-2">
-                    {currentSnapshot.totalStudents 
-                      ? `${Math.round((currentSnapshot.scholarshipCount / currentSnapshot.totalStudents) * 100)}% of cohort supported by Ashinaga` 
+                    {currentSnapshot.totalStudents
+                      ? `${Math.round((currentSnapshot.scholarshipCount / currentSnapshot.totalStudents) * 100)}% of cohort supported by V-Learning`
                       : '0%'}
                   </p>
                 </div>
@@ -958,12 +918,12 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
                     const isActive = selectedClassFilter === cls;
 
                     return (
-                      <div 
+                      <div
                         key={cls}
                         onClick={() => setSelectedClassFilter(isActive ? 'All' : cls)}
                         className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer text-center ${
-                          isActive 
-                            ? 'bg-indigo-50 border-indigo-600 shadow-sm scale-105' 
+                          isActive
+                            ? 'bg-indigo-50 border-indigo-600 shadow-sm scale-105'
                             : 'bg-slate-50 border-slate-100 hover:border-slate-300 hover:bg-slate-100'
                         }`}
                       >
@@ -979,7 +939,7 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
 
               {/* Detailed Student Roster Table for Selected Year */}
               <section className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden space-y-4 p-6">
-                
+
                 {/* Table Header & Search/Filters */}
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
                   <div>
@@ -997,7 +957,7 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
                     {/* Search */}
                     <div className="relative">
                       <Search className="h-4 w-4 text-slate-400 absolute left-3 top-2.5" />
-                      <input 
+                      <input
                         type="text"
                         placeholder="Search pupil name, zone, ID..."
                         value={searchQuery}
@@ -1128,7 +1088,7 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
             <div className="w-12 h-12 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center mx-auto">
               <Trash2 className="h-6 w-6" />
             </div>
-            
+
             <div className="text-center space-y-1">
               <h3 className="text-base font-black text-slate-900">
                 Delete Academic Year {deleteConfirmYear} Archive?
@@ -1160,7 +1120,7 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
       {isUploadModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-6 my-8 border border-slate-100 animate-scale-up max-h-[90vh] overflow-y-auto">
-            
+
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-3">
@@ -1176,7 +1136,7 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
                   </p>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => setIsUploadModalOpen(false)}
                 className="p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 cursor-pointer"
               >
@@ -1221,17 +1181,17 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
                 onDrop={handleFileDrop}
                 onClick={() => fileInputRef.current?.click()}
                 className={`border-2 border-dashed rounded-3xl p-8 text-center cursor-pointer transition-all ${
-                  dragActive 
-                    ? 'border-indigo-600 bg-indigo-50/50' 
+                  dragActive
+                    ? 'border-indigo-600 bg-indigo-50/50'
                     : 'border-slate-300 hover:border-indigo-400 bg-slate-50/50 hover:bg-indigo-50/20'
                 }`}
               >
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  accept=".xlsx, .xls" 
-                  onChange={(e) => e.target.files?.[0] && handleProcessExcel(e.target.files[0])} 
-                  className="hidden" 
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept=".xlsx, .xls"
+                  onChange={(e) => e.target.files?.[0] && handleProcessExcel(e.target.files[0])}
+                  className="hidden"
                 />
                 <div className="w-16 h-16 bg-white rounded-2xl shadow-sm text-indigo-600 flex items-center justify-center mx-auto mb-3">
                   <FileSpreadsheet className="h-8 w-8 text-indigo-500" />

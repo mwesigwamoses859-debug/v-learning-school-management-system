@@ -25,7 +25,7 @@ import { googleSignIn, initAuth } from '../lib/firebase';
 import { createAndExportStudentsSheet } from '../lib/googleSheets';
 import { checkNameSimilarity } from '../utils/nameSimilarity';
 import { evaluateScholarshipEligibility } from '../utils/scholarshipEligibility';
-import AshinagaLogo from './AshinagaLogo';
+import VLearningLogo from './VLearningLogo';
 import StudentQrCodeModal from './StudentQrCodeModal';
 
 interface ClassListProps {
@@ -317,7 +317,7 @@ export default function ClassList({
       surname: '',
       otherNames: '',
       gender: 'Male',
-      dateOfBirth: '2015-01-01',
+      dateOfBirth: '',
       className: selectedClass,
       yearOfEntry: new Date().getFullYear(),
       photo: '',
@@ -474,7 +474,7 @@ export default function ClassList({
       {/* Header section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sky-150 pb-5">
         <div className="flex items-center gap-3">
-          <AshinagaLogo size={50} className="shrink-0 bg-white p-1 rounded-xl shadow-xs border border-slate-100" />
+          <VLearningLogo size={50} className="shrink-0 bg-white p-1 rounded-xl shadow-xs border border-slate-100" />
           <div>
             <h1 className="font-display text-2xl font-black text-slate-800">Student Database</h1>
             <p className="text-xs text-slate-400 mt-1">Manage and view pupil details separately across classes P.1 to P.7</p>
@@ -902,7 +902,7 @@ export default function ClassList({
               </div>
               <div>
                 <h3 className="text-lg font-black text-slate-900">Delete {selectedStudentIds.length} Selected Pupils</h3>
-                <p className="text-xs text-slate-500">Permanent action from Ashinaga Uganda EMIS</p>
+                <p className="text-xs text-slate-500">Permanent action from V-Learning Uganda EMIS</p>
               </div>
             </div>
 

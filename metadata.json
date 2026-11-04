@@ -1,8 +1,4 @@
 {
   "name": "V-Learning School Management System",
-  "description": "Official Student & School Management System for V-Learning Uganda: Student registration records, academic assessment marks, printable reports, and multi-school class tracking.",
-  "requestFramePermissions": [
-    "camera"
-  ],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "description": "Student records, school administration and V-Learning Uganda quiz results."
 }

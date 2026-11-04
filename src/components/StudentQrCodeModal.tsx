@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import { Student, Mark } from '../types';
-import AshinagaLogo from './AshinagaLogo';
+import VLearningLogo from './VLearningLogo';
 
 interface StudentQrCodeModalProps {
   student: Student | null;
@@ -106,7 +106,7 @@ export default function StudentQrCodeModal({
         {/* Header Bar */}
         <div className="bg-[#0b2d59] p-6 text-white flex items-center justify-between relative">
           <div className="flex items-center gap-3">
-            <AshinagaLogo size={38} className="shrink-0 bg-white p-1 rounded-xl" />
+            <VLearningLogo size={38} className="shrink-0 bg-white p-1 rounded-xl" />
             <div>
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-amber-400 text-slate-900 rounded-full text-[9px] font-black uppercase tracking-wider mb-1">
                 <Sparkles className="h-3 w-3 text-slate-900" /> Unique Pupil QR Code

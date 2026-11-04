@@ -19,7 +19,7 @@ import {
   Briefcase
 } from 'lucide-react';
 import { Student, ClassName, Teacher, Mark } from '../types';
-import AshinagaLogo from './AshinagaLogo';
+import VLearningLogo from './VLearningLogo';
 
 interface SupportRecord {
   id: string;
@@ -62,7 +62,7 @@ export default function AttendanceSupport({ students, teacherClasses = [], isAdm
   const [selectedStudentId, setSelectedStudentId] = useState('');
   const [supportType, setSupportType] = useState('School Fees');
   const [supportAmount, setSupportAmount] = useState('');
-  const [supportSponsor, setSupportSponsor] = useState('Ashinaga Uganda Foundation');
+  const [supportSponsor, setSupportSponsor] = useState('V-Learning Uganda Foundation');
   const [supportApprovedBy, setSupportApprovedBy] = useState(teacher.name || 'Headteacher');
 
   useEffect(() => {
@@ -208,7 +208,7 @@ export default function AttendanceSupport({ students, teacherClasses = [], isAdm
       {/* Header section with Android 16/Material Design vibe */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sky-150 pb-5">
         <div className="flex items-center gap-3">
-          <AshinagaLogo size={50} className="shrink-0 bg-white p-1 rounded-xl shadow-xs border border-slate-100" />
+          <VLearningLogo size={50} className="shrink-0 bg-white p-1 rounded-xl shadow-xs border border-slate-100" />
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-wider mb-2">
               <Sparkles className="h-3 w-3 text-indigo-500 animate-spin" /> Attendance Engine

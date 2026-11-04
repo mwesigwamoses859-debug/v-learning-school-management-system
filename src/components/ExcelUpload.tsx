@@ -25,7 +25,7 @@ import {
   listSharedFolderFiles
 } from '../lib/googleSheets';
 import { checkNameSimilarity } from '../utils/nameSimilarity';
-import AshinagaLogo from './AshinagaLogo';
+import VLearningLogo from './VLearningLogo';
 
 interface ExcelUploadProps {
   students: Student[];
@@ -102,50 +102,7 @@ export default function ExcelUpload({ students, onBulkAddStudents, onSuccessRedi
       'Scholarship'
     ];
 
-    const sampleRows = [
-      {
-        'Surname': 'Nsubuga',
-        'Other Names': 'Joseph',
-        'Gender': 'Male',
-        'Date of Birth': '2016-04-10',
-        'Class Name': 'P.5',
-        'Year of Entry': 2022,
-        "Guardian's Name": 'Mukasa William',
-        'Relationship': 'Father',
-        'Contact-1': '+256 702 445588',
-        'Contact-2': '+256 752 445588',
-        'Community Worker': 'Namatovu Florence',
-        'Zone': 'Nabweru',
-        'Next of Kin': 'Nabirye Sarah',
-        'Contact': '+256 772 112233',
-        'No. in Household': 6,
-        'Deceased': 'No',
-        'Cause of death': '',
-        'School': 'Rainbow House',
-        'Scholarship': 'Yes'
-      },
-      {
-        'Surname': 'Nalweyiso',
-        'Other Names': 'Angel',
-        'Gender': 'Female',
-        'Date of Birth': '2015-11-22',
-        'Class Name': 'P.6',
-        'Year of Entry': 2021,
-        "Guardian's Name": 'Nassolo Harriet',
-        'Relationship': 'Mother',
-        'Contact-1': '+256 752 998877',
-        'Contact-2': '',
-        'Community Worker': 'Kibirige Sula',
-        'Zone': 'Gganda',
-        'Next of Kin': 'Nassolo Maria',
-        'Contact': '+256 701 445522',
-        'No. in Household': 4,
-        'Deceased': 'No',
-        'Cause of death': '',
-        'School': 'Rainbow House',
-        'Scholarship': 'No'
-      }
-    ];
+    const sampleRows: Record<string, string>[] = [];
 
     const ws = XLSX.utils.json_to_sheet(sampleRows, { header: templateHeaders });
     const wb = XLSX.utils.book_new();
@@ -747,7 +704,7 @@ export default function ExcelUpload({ students, onBulkAddStudents, onSuccessRedi
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sky-150 pb-5">
         <div className="flex items-center gap-3">
-          <AshinagaLogo size={50} className="shrink-0 bg-white p-1 rounded-xl shadow-xs border border-slate-100" />
+          <VLearningLogo size={50} className="shrink-0 bg-white p-1 rounded-xl shadow-xs border border-slate-100" />
           <div>
             <h1 className="font-display text-2xl font-black text-slate-800">Student Roster Importer</h1>
             <p className="text-xs text-slate-400 mt-1">Upload and register bulk student records via Excel files or direct Google Sheets connection</p>
@@ -974,12 +931,12 @@ export default function ExcelUpload({ students, onBulkAddStudents, onSuccessRedi
                   </div>
                 </div>
 
-                {/* Ashinaga Uganda Shared Folder Files */}
+                {/* V-Learning Uganda Shared Folder Files */}
                 <div className="border-t border-slate-100 pt-6 space-y-3">
                   <div>
                     <h4 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                       <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                      <span>Ashinaga Uganda Shared Student Registries Folder</span>
+                      <span>V-Learning Uganda Shared Student Registries Folder</span>
                     </h4>
                     <p className="text-[10px] text-slate-400">These spreadsheets are directly extracted from your shared folder link.</p>
                   </div>

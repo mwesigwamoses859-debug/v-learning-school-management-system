@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { CheckCircle, AlertTriangle, ShieldCheck, Search, QrCode, FileText, Sparkles, BookOpen, User, Calendar, RefreshCw, X } from 'lucide-react';
 import { Student, Mark } from '../types';
-import AshinagaLogo from './AshinagaLogo';
+import VLearningLogo from './VLearningLogo';
 
 interface ReportVerificationProps {
   students: Student[];
@@ -68,7 +68,7 @@ export default function ReportVerification({ students, marks, onClose }: ReportV
     if (!student) {
       return {
         success: false,
-        message: 'Invalid Student ID. No matching registered pupil found in the Ashinaga school registry.'
+        message: 'Invalid Student ID. No matching registered pupil found in the V-Learning school registry.'
       };
     }
 
@@ -114,7 +114,7 @@ export default function ReportVerification({ students, marks, onClose }: ReportV
     if (stIndex === -1) {
       setLookupResult({
         success: false,
-        message: 'Could not resolve Student ID. Reference code must contain a valid Ashinaga registration ID (e.g. st-3).'
+        message: 'Could not resolve Student ID. Reference code must contain a valid V-Learning registration ID (e.g. st-3).'
       });
       return;
     }
@@ -180,11 +180,11 @@ export default function ReportVerification({ students, marks, onClose }: ReportV
       {/* Header Banner */}
       <div className="bg-[#0b2d59] p-6 text-white flex justify-between items-center relative overflow-hidden">
         <div className="absolute -right-4 -top-4 opacity-15 pointer-events-none">
-          <AshinagaLogo size={160} />
+          <VLearningLogo size={160} />
         </div>
         <div className="space-y-1.5 z-10">
           <div className="flex items-center gap-2">
-            <AshinagaLogo size={32} />
+            <VLearningLogo size={32} />
             <span className="text-[10px] uppercase font-black tracking-widest font-mono text-indigo-300">
               Security Certification
             </span>
@@ -371,7 +371,7 @@ export default function ReportVerification({ students, marks, onClose }: ReportV
                       {/* Footer security badge */}
                       <div className="pt-2 border-t border-slate-100 flex justify-between items-center text-[9px] text-slate-400 font-mono">
                         <span>Ledger Signature: sha256_verified</span>
-                        <span>Ashinaga School Office Stamp OK</span>
+                        <span>V-Learning School Office Stamp OK</span>
                       </div>
                     </div>
                   )}

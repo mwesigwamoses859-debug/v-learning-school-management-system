@@ -25,6 +25,7 @@ export default function Sidebar({ activeTab, setActiveTab, teacher, onLogout }: 
   const adminItems = [
     { id: 'dashboard', name: 'Dashboard', icon: Home },
     { id: 'classes', name: 'Students', icon: Users },
+    { id: 'online-learning', name: 'Online learning', icon: BookOpen },
     { id: 'subjects', name: 'Subject Portals', icon: BookOpen },
     { id: 'marks', name: 'Academics', icon: GraduationCap },
     { id: 'attendance', name: 'Attendance', icon: Calendar },
@@ -82,10 +83,10 @@ export default function Sidebar({ activeTab, setActiveTab, teacher, onLogout }: 
         {/* Ministry Ready Status */}
         <div className="p-3 bg-[#0a1f35] rounded-xl flex items-center justify-between">
           <div className="space-y-0.5">
-            <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block">EMIS Sync</span>
+            <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block">V-Learning Uganda</span>
             <span className="text-[10px] font-bold text-emerald-400 block flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-              Ready
+              School portal
             </span>
           </div>
           <Sparkles className="h-4 w-4 text-amber-400 shrink-0" />

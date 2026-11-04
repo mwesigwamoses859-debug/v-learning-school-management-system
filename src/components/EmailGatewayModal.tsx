@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Mail, 
-  ShieldCheck, 
-  ShieldAlert, 
-  Bell, 
-  X, 
-  CheckCircle2, 
-  RefreshCw, 
-  Filter, 
-  Search, 
-  Key, 
-  ArrowRight, 
-  Clock, 
-  UserCheck, 
+import {
+  Mail,
+  ShieldCheck,
+  ShieldAlert,
+  Bell,
+  X,
+  CheckCircle2,
+  RefreshCw,
+  Filter,
+  Search,
+  Key,
+  ArrowRight,
+  Clock,
+  UserCheck,
   Send,
   Sparkles,
   Inbox
 } from 'lucide-react';
 import { Teacher } from '../types';
-import AshinagaLogo from './AshinagaLogo';
+import VLearningLogo from './VLearningLogo';
 
 export interface EmailLog {
   id: string;
@@ -47,7 +47,7 @@ export default function EmailGatewayModal({ isOpen, onClose, currentTeacher }: E
   const [selectedEmail, setSelectedEmail] = useState<EmailLog | null>(null);
 
   // Manual Test Email Dispatch state
-  const [testRecipient, setTestRecipient] = useState('john.mukasa@ashinaga.or.ug');
+  const [testRecipient, setTestRecipient] = useState('');
   const [testSubject, setTestSubject] = useState('Workspace Access Security Alert');
   const [testCategory, setTestCategory] = useState<'CONFIRMATION_CODE' | 'ACTIVITY_ALERT' | 'LOGIN_ALERT' | 'MARK_MODIFICATION'>('ACTIVITY_ALERT');
   const [isSending, setIsSending] = useState(false);
@@ -94,7 +94,7 @@ export default function EmailGatewayModal({ isOpen, onClose, currentTeacher }: E
           subject: `[Automated Gateway Alert] ${testSubject}`,
           category: testCategory,
           code,
-          body: `Security Notification Dispatch:\nAn activity trigger occurred in the Ashinaga Rainbow House Database.\nSecurity Code: ${code}\nInitiator: ${currentTeacher.name} (${currentTeacher.email || currentTeacher.username})\nTimestamp: ${new Date().toLocaleString()}`
+          body: `Security Notification Dispatch:\nAn activity trigger occurred in the V-Learning Uganda Database.\nSecurity Code: ${code}\nInitiator: ${currentTeacher.name} (${currentTeacher.email || currentTeacher.username})\nTimestamp: ${new Date().toLocaleString()}`
         })
       });
 
@@ -112,7 +112,7 @@ export default function EmailGatewayModal({ isOpen, onClose, currentTeacher }: E
   if (!isOpen) return null;
 
   const filteredLogs = logs.filter(log => {
-    const matchesSearch = 
+    const matchesSearch =
       log.recipientEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
       log.recipientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       log.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -137,7 +137,7 @@ export default function EmailGatewayModal({ isOpen, onClose, currentTeacher }: E
                   Automated Gateway Service
                 </span>
                 <span className="px-2 py-0.5 bg-emerald-500/30 text-emerald-200 text-[9px] font-black uppercase rounded tracking-wider border border-emerald-400/30">
-                  @ashinaga.or.ug Company Mail
+                  @vlearning.invalid Company Mail
                 </span>
               </div>
               <h2 className="text-xl font-black font-display tracking-tight text-white mt-0.5">
@@ -165,7 +165,7 @@ export default function EmailGatewayModal({ isOpen, onClose, currentTeacher }: E
 
         {/* Modal Content - Grid 2 columns */}
         <div className="grid grid-cols-1 md:grid-cols-12 flex-1 overflow-hidden divide-y md:divide-y-0 md:divide-x divide-slate-200">
-          
+
           {/* Left Panel: Email Feed (5 cols) */}
           <div className="md:col-span-5 flex flex-col bg-slate-50/50 overflow-hidden">
             {/* Filter bar */}
@@ -188,8 +188,8 @@ export default function EmailGatewayModal({ isOpen, onClose, currentTeacher }: E
                     key={role}
                     onClick={() => setFilterRole(role)}
                     className={`px-2.5 py-1 rounded-lg text-[10px] uppercase font-black transition-all cursor-pointer ${
-                      filterRole === role 
-                        ? 'bg-indigo-600 text-white shadow' 
+                      filterRole === role
+                        ? 'bg-indigo-600 text-white shadow'
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     }`}
                   >
@@ -216,15 +216,15 @@ export default function EmailGatewayModal({ isOpen, onClose, currentTeacher }: E
                       key={log.id}
                       onClick={() => setSelectedEmail(log)}
                       className={`w-full text-left p-3.5 rounded-2xl border transition-all cursor-pointer relative ${
-                        isSelected 
-                          ? 'bg-white border-indigo-600 shadow-md ring-2 ring-indigo-500/20' 
+                        isSelected
+                          ? 'bg-white border-indigo-600 shadow-md ring-2 ring-indigo-500/20'
                           : 'bg-white hover:bg-slate-100/70 border-slate-200'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${
-                          isConfirmation 
-                            ? 'bg-amber-100 text-amber-900 border border-amber-300' 
+                          isConfirmation
+                            ? 'bg-amber-100 text-amber-900 border border-amber-300'
                             : 'bg-indigo-100 text-indigo-900 border border-indigo-300'
                         }`}>
                           {log.category.replace('_', ' ')}
@@ -260,7 +260,7 @@ export default function EmailGatewayModal({ isOpen, onClose, currentTeacher }: E
 
           {/* Right Panel: Email Detail & Test Dispatcher (7 cols) */}
           <div className="md:col-span-7 flex flex-col bg-white overflow-y-auto p-6 space-y-6">
-            
+
             {/* EMAIL VIEWER */}
             {selectedEmail ? (
               <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 space-y-5 shadow-sm">
@@ -352,10 +352,10 @@ export default function EmailGatewayModal({ isOpen, onClose, currentTeacher }: E
                       onChange={(e) => setTestRecipient(e.target.value)}
                       className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                     >
-                      <option value="headteacher@ashinaga.or.ug">headteacher@ashinaga.or.ug (Headteacher)</option>
-                      <option value="dos@ashinaga.or.ug">dos@ashinaga.or.ug (DOS - Mr. Ochieng)</option>
-                      <option value="john.mukasa@ashinaga.or.ug">john.mukasa@ashinaga.or.ug (Math/Science)</option>
-                      <option value="sarah.babirye@ashinaga.or.ug">sarah.babirye@ashinaga.or.ug (English/SST)</option>
+
+
+
+
                     </select>
                   </div>
 

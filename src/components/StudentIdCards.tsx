@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import { Student, ClassName } from '../types';
-import AshinagaLogo from './AshinagaLogo';
+import VLearningLogo from './VLearningLogo';
 
 interface StudentIdCardsProps {
   students: Student[];
@@ -74,7 +74,7 @@ export default function StudentIdCards({ students, teacherClasses = [], isAdmin 
       {/* Header section - Hidden during printing */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sky-150 pb-5 print:hidden">
         <div className="flex items-center gap-3">
-          <AshinagaLogo size={50} className="shrink-0 bg-white p-1 rounded-xl shadow-xs border border-slate-100" />
+          <VLearningLogo size={50} className="shrink-0 bg-white p-1 rounded-xl shadow-xs border border-slate-100" />
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-[10px] font-black uppercase tracking-wider mb-2">
               <Sparkles className="h-3 w-3 text-amber-500 animate-pulse" /> School Credentials Generator

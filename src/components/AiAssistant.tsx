@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import Markdown from 'react-markdown';
 import { motion } from 'motion/react';
-import AshinagaLogo from './AshinagaLogo';
+import VLearningLogo from './VLearningLogo';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -25,7 +25,7 @@ export default function AiAssistant() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hello! I am your **Ashinaga Uganda Rainbow House AI Assistant**. I have real-time access to our student registry, academics ledger, support plans, and community home visit records.\n\nChoose a role or persona from the settings above, and ask me any question about our students, academic performance, social support, or administrative planning!"
+      content: "Hello! I am your **V-Learning Uganda AI Assistant**. I have real-time access to our student registry, academics ledger, support plans, and community home visit records.\n\nChoose a role or persona from the settings above, and ask me any question about our students, academic performance, social support, or administrative planning!"
     }
   ]);
   const [input, setInput] = useState('');
@@ -101,7 +101,7 @@ export default function AiAssistant() {
             : newRole === 'social' 
               ? 'Community Social Worker' 
               : 'Lead School Administrator'
-        }**.\n\nHow can I support your work at the Rainbow House today?`
+        }**.\n\nHow can I support your work at the V-Learning Uganda today?`
       }
     ]);
   };
@@ -130,7 +130,7 @@ export default function AiAssistant() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4 no-print">
         <div className="flex items-center gap-3">
-          <AshinagaLogo size={50} className="shrink-0 bg-white p-1 rounded-xl shadow-xs border border-slate-100" />
+          <VLearningLogo size={50} className="shrink-0 bg-white p-1 rounded-xl shadow-xs border border-slate-100" />
           <div>
             <h2 className="text-xl font-black text-[#032b5e] uppercase tracking-tight flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-indigo-500 animate-pulse" />
@@ -254,7 +254,7 @@ export default function AiAssistant() {
                 <Cpu className="h-4 w-4 text-indigo-600 animate-spin" />
               </div>
               <div className="bg-white text-slate-500 border border-slate-100 p-4 rounded-2xl rounded-tl-none shadow-sm text-xs font-bold flex items-center gap-2">
-                <span>Analyzing Rainbow House dataset...</span>
+                <span>Analyzing V-Learning Uganda dataset...</span>
                 <span className="flex gap-0.5">
                   <span className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-pulse" />
                   <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-pulse delay-75" />

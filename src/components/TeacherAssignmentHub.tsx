@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { Teacher, ClassName } from '../types';
 import { ALL_SUBJECTS, getSubjectsForClass, isSubjectForClass } from '../curriculum';
-import AshinagaLogo from './AshinagaLogo';
+import VLearningLogo from './VLearningLogo';
 
 interface TeacherAssignmentHubProps {
   teachers: Teacher[];
@@ -77,7 +77,7 @@ export default function TeacherAssignmentHub({
     setName(teacher.name);
     setResponsibility(teacher.responsibility || '');
     setPassword('');
-    setEmail(teacher.email || `${teacher.username}@ashinaga.or.ug`);
+    setEmail(teacher.email || `${teacher.username}@vlearning.invalid`);
     setSelectedRole(teacher.role || 'Subject Teacher');
     setSelectedSubjects(teacher.subjects);
     setSelectedClasses(teacher.classes);
@@ -173,7 +173,7 @@ export default function TeacherAssignmentHub({
         name: name.trim(),
         responsibility: responsibility.trim(),
         password: password.trim(),
-        email: email.trim() || `${username.trim()}@ashinaga.or.ug`,
+        email: email.trim() || `${username.trim()}@vlearning.invalid`,
         role: selectedRole,
         subjects: selectedSubjects,
         classes: selectedClasses,
@@ -207,7 +207,7 @@ export default function TeacherAssignmentHub({
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sky-100 pb-5">
         <div className="flex items-center gap-3">
-          <AshinagaLogo size={50} className="shrink-0 bg-white p-1 rounded-xl shadow-xs border border-slate-100" />
+          <VLearningLogo size={50} className="shrink-0 bg-white p-1 rounded-xl shadow-xs border border-slate-100" />
           <div>
             <h1 className="font-display text-2xl font-black text-slate-800 flex items-center gap-2.5">
               <span>Teacher Assignments & Subject Controls</span>
@@ -350,7 +350,7 @@ export default function TeacherAssignmentHub({
                 <label className="block text-xs font-black text-slate-500 mb-1.5 uppercase tracking-wider">Official Work Email</label>
                 <input
                   type="email"
-                  placeholder="e.g. florence@ashinaga.or.ug"
+                  placeholder="e.g. florence@vlearning.invalid"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-4 py-2.5 border-2 border-slate-200 hover:border-slate-300 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-800"

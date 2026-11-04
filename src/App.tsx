@@ -1,3 +1,4 @@
+import OnlineLearning from './components/OnlineLearning';
 import { useState, useEffect } from 'react';
 import { Teacher, Student, Mark, ClassName } from './types';
 import Login from './components/Login';
@@ -22,7 +23,7 @@ import DocumentGenerator from './components/DocumentGenerator';
 import AiAssistant from './components/AiAssistant';
 import AcademicAnalytics from './components/AcademicAnalytics';
 import ReportVerification from './components/ReportVerification';
-import AshinagaLogo from './components/AshinagaLogo';
+import VLearningLogo from './components/VLearningLogo';
 import SubjectWorkspaces from './components/SubjectWorkspaces';
 import EmailGatewayModal from './components/EmailGatewayModal';
 import QuickActionFAB from './components/QuickActionFAB';
@@ -105,12 +106,7 @@ export default function App() {
   const [selectedProfileStudent, setSelectedProfileStudent] = useState<Student | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [currentRole, setCurrentRole] = useState<string>('administrator');
-  const [auditLogs, setAuditLogs] = useState<any[]>([
-    { id: 1, timestamp: '2026-07-17 10:15:30', user: 'Admin Mukasa (administrator)', action: 'Approved Term 2 P.7 Mathematics marks', ip: '192.168.1.14' },
-    { id: 2, timestamp: '2026-07-17 09:44:12', user: 'Florence Namatovu (community_worker)', action: 'Registered home visit log for John Mukasa (st-1)', ip: '102.16.88.42' },
-    { id: 3, timestamp: '2026-07-16 16:30:00', user: 'Head Teacher Kibirige (head_teacher)', action: 'Generated completion certificates for Class P.7 candidates', ip: '192.168.1.2' },
-    { id: 4, timestamp: '2026-07-16 11:22:15', user: 'Bursar Nabakooza (bursar)', action: 'Allocated uniform & school meal support to Patience Atwine (st-6)', ip: '192.168.1.5' },
-  ]);
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
 
   const addAuditLog = (action: string) => {
     const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
@@ -119,7 +115,7 @@ export default function App() {
       timestamp,
       user: teacher ? `${teacher.name} (${currentRole})` : `Guest (${currentRole})`,
       action,
-      ip: '192.168.1.10'
+      ip: ''
     };
     setAuditLogs(prev => [newLog, ...prev]);
   };
@@ -209,16 +205,29 @@ export default function App() {
     }
   }, [students, marks]);
 
-  // Load teacher from session or localStorage
+  // Restore the server-verified staff session or a one-use platform sign-in.
   useEffect(() => {
-    const savedTeacher = localStorage.getItem('school_sms_teacher');
+    const hash=new URLSearchParams(window.location.hash.slice(1));
+    const code=hash.get('school_code');
+    if(code)window.history.replaceState({},'',window.location.pathname);
+    const restore=async()=>{
+      try {
+        const response=await fetch(code?'/api/auth/platform-login':'/api/auth/session',code?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})}:{});
+        if(!response.ok)return;const result=await response.json();
+        setTeacher(result.teacher);setCurrentRole(systemRoleFor(result.teacher));if(code)setActiveTab('online-learning');
+      }catch{}
+    };
+    restore();
+  }, []);
+  useEffect(() => {
+    const savedTeacher = localStorage.getItem('vlearning_sms_teacher');
     if (savedTeacher) {
       try {
         const parsed = JSON.parse(savedTeacher);
         setTeacher(parsed);
         setCurrentRole(systemRoleFor(parsed));
       } catch (err) {
-        localStorage.removeItem('school_sms_teacher');
+        localStorage.removeItem('vlearning_sms_teacher');
       }
     }
   }, []);
@@ -236,7 +245,7 @@ export default function App() {
       ]);
 
       if (studentsRes.status === 401 || marksRes.status === 401 || teachersRes.status === 401) {
-        localStorage.removeItem('school_sms_teacher');
+        localStorage.removeItem('vlearning_sms_teacher');
         setTeacher(null);
         setLoading(false);
         return;
@@ -269,14 +278,15 @@ export default function App() {
   // Auth Handlers
   const handleLoginSuccess = (loggedInTeacher: Teacher) => {
     setTeacher(loggedInTeacher);
-    localStorage.setItem('school_sms_teacher', JSON.stringify(loggedInTeacher));
+    localStorage.setItem('vlearning_sms_teacher', JSON.stringify(loggedInTeacher));
     setCurrentRole(systemRoleFor(loggedInTeacher));
     setActiveTab('dashboard');
   };
 
   const handleLogout = () => {
+    fetch('/api/auth/logout',{method:'POST',headers:teacher?.authToken?{Authorization:'Bearer '+teacher.authToken}:{}}).catch(()=>{});
     setTeacher(null);
-    localStorage.removeItem('school_sms_teacher');
+    localStorage.removeItem('vlearning_sms_teacher');
   };
 
   useEffect(() => {
@@ -572,7 +582,7 @@ export default function App() {
         onLogout={handleLogout}
         onComplete={updatedTeacher => {
           setTeacher(updatedTeacher);
-          localStorage.setItem('school_sms_teacher', JSON.stringify(updatedTeacher));
+          localStorage.setItem('vlearning_sms_teacher', JSON.stringify(updatedTeacher));
         }}
       />
     );
@@ -582,6 +592,7 @@ export default function App() {
   const primaryTabs = isAdmin
     ? [
       { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard },
+      { id: 'online-learning', name: 'Online learning', icon: BookOpen },
       { id: 'classes', name: 'Students', icon: Users },
       { id: 'marks', name: 'Academics', icon: GraduationCap },
       { id: 'reports', name: 'Reports', icon: FileSpreadsheet },
@@ -712,7 +723,7 @@ export default function App() {
                   </div>
 
                   <div className="p-3 bg-emerald-50 text-emerald-950 text-xs rounded-xl border border-emerald-200/55 leading-relaxed text-center font-medium">
-                    This document is fully certified and verified by V-Learning Uganda Education Management authorities as a true copy of original school records.
+                    This document is issued by V-Learning Uganda as a true copy of original school records.
                   </div>
                 </div>
               ) : (
@@ -747,7 +758,7 @@ export default function App() {
         {/* Left Section: Shield Logo and Title */}
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center p-1 bg-slate-900 rounded-xl shadow-sm">
-            <AshinagaLogo size={40} />
+            <VLearningLogo size={40} />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -756,11 +767,11 @@ export default function App() {
               </h1>
               <span className="px-1.5 py-0.5 bg-amber-100 text-amber-900 border border-amber-300 text-[9px] font-black rounded uppercase flex items-center gap-1 shadow-2xs">
                 <span>🇺🇬</span>
-                <span>Uganda Node</span>
+                <span>V-Learning Uganda</span>
               </span>
             </div>
             <p className="text-[10px] text-slate-500 mt-0.5 font-extrabold uppercase tracking-widest flex items-center gap-1.5">
-              <span>National EMIS Database</span>
+              <span>School records & online learning</span>
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full inline-block animate-pulse"></span>
               <span className="text-emerald-700 font-black">Online & Secured</span>
             </p>
@@ -936,6 +947,7 @@ export default function App() {
               {/* Active Tab Router */}
               
               {/* 1. Dashboard Tab */}
+              {activeTab === 'online-learning' && isAdmin && <OnlineLearning teacher={teacher}/>}
               {activeTab === 'dashboard' && (
                 isAdmin ? <Dashboard
                   students={students} 

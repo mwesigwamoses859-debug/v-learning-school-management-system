@@ -34,9 +34,3 @@ CREATE TABLE IF NOT EXISTS marks (
   updated_at INTEGER NOT NULL,
   UNIQUE(student_id, subject, term, year)
 );
-
-INSERT OR IGNORE INTO staff (username, name, email, role, subjects, classes)
-VALUES
-  ('admin', 'Headteacher / Administrator', 'mwesigwa.m@ashinaga.org', 'Headteacher', '["All"]', '["P.1","P.2","P.3","P.4","P.5","P.6","P.7"]'),
-  ('teacher1', 'Mr. John Mukasa', 'john.mukasa@ashinaga.org', 'Subject Teacher', '["Mathematics","Science"]', '["P.5","P.6","P.7"]'),
-  ('teacher2', 'Mrs. Sarah Babirye', 'sarah.babirye@ashinaga.org', 'Subject Teacher', '["English","Social Studies","Religious Education"]', '["P.1","P.2","P.3","P.4"]');
