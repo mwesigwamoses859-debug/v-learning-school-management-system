@@ -607,7 +607,7 @@ async function api(request: Request, env: Env): Promise<Response> {
    await env.DB.prepare(`INSERT INTO staff(username,name,email,role,subjects,classes,active_terms,active) VALUES('platform-owner','V-Learning Administrator','platform-owner@vlearning.invalid','Headteacher','["All"]','["P.1","P.2","P.3","P.4","P.5","P.6","P.7","S.1","S.2","S.3","S.4","S.5","S.6"]','[1,2,3]',1) ON CONFLICT(username) DO UPDATE SET active=1`).run();
    const staff=await env.DB.prepare("SELECT * FROM staff WHERE username='platform-owner'").first() as StaffRow;
    const token=await issueSession(env,staff);
-   return Response.json({success:true,teacher:toTeacher(staff)},{headers:{'Set-Cookie':staffCookie(token),'Cache-Control':'no-store'}});
+   return Response.json({success:true,teacher:toTeacher(staff),token},{headers:{'Set-Cookie':staffCookie(token),'Cache-Control':'no-store'}});
   }
   if(request.method==='POST' && url.pathname==='/api/auth/logout') {
    const token=sessionToken(request);if(token)await env.DB.prepare('DELETE FROM school_staff_sessions WHERE token_hash=?').bind(await sessionHash(token)).run();
@@ -1471,7 +1471,11 @@ export default {
     const url = new URL(request.url);
     try {
       if (url.pathname.startsWith('/api/')) return await api(request, env);
-      return env.ASSETS.fetch(request);
+      const asset=await env.ASSETS.fetch(request);
+      const headers=new Headers(asset.headers);
+      headers.set('Content-Security-Policy',"frame-ancestors 'self' https://v-learning-uganda-app.pages.dev");
+      headers.set('Referrer-Policy','strict-origin-when-cross-origin');
+      return new Response(asset.body,{status:asset.status,statusText:asset.statusText,headers});
     } catch (error: any) {
       console.error(error);
       return json({ success: false, message: error.message || 'Internal server error.' }, 500);

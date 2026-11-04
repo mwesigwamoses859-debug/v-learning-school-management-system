@@ -1,3 +1,4 @@
+import {setStaffToken} from './lib/staffFetch';
 import OnlineLearning from './components/OnlineLearning';
 import { useState, useEffect } from 'react';
 import { Teacher, Student, Mark, ClassName } from './types';
@@ -214,12 +215,13 @@ export default function App() {
       try {
         const response=await fetch(code?'/api/auth/platform-login':'/api/auth/session',code?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})}:{});
         if(!response.ok)return;const result=await response.json();
-        setTeacher(result.teacher);setCurrentRole(systemRoleFor(result.teacher));if(code)setActiveTab('online-learning');
+        setStaffToken(result.token||'');setTeacher({...result.teacher,...(result.token?{authToken:result.token}:{})});setCurrentRole(systemRoleFor(result.teacher));if(code)setActiveTab('online-learning');
       }catch{}
     };
     restore();
   }, []);
   useEffect(() => {
+    if(window.parent!==window)return;
     const savedTeacher = localStorage.getItem('vlearning_sms_teacher');
     if (savedTeacher) {
       try {
@@ -245,7 +247,8 @@ export default function App() {
       ]);
 
       if (studentsRes.status === 401 || marksRes.status === 401 || teachersRes.status === 401) {
-        localStorage.removeItem('vlearning_sms_teacher');
+        setStaffToken('');
+        if(window.parent===window)localStorage.removeItem('vlearning_sms_teacher');
         setTeacher(null);
         setLoading(false);
         return;
@@ -262,6 +265,7 @@ export default function App() {
       setStudents(studentsData);
       setMarks(marksData);
       setTeachers(teachersData);
+      if(window.parent!==window)window.parent.postMessage({type:'vlearning-school-ready'},'https://v-learning-uganda-app.pages.dev');
     } catch (err) {
       setError('Connection to backend failed. Please check that the server is online.');
     } finally {
@@ -277,16 +281,18 @@ export default function App() {
 
   // Auth Handlers
   const handleLoginSuccess = (loggedInTeacher: Teacher) => {
+    setStaffToken(loggedInTeacher.authToken||'');
     setTeacher(loggedInTeacher);
-    localStorage.setItem('vlearning_sms_teacher', JSON.stringify(loggedInTeacher));
+    if(window.parent===window)localStorage.setItem('vlearning_sms_teacher', JSON.stringify(loggedInTeacher));
     setCurrentRole(systemRoleFor(loggedInTeacher));
     setActiveTab('dashboard');
   };
 
   const handleLogout = () => {
     fetch('/api/auth/logout',{method:'POST',headers:teacher?.authToken?{Authorization:'Bearer '+teacher.authToken}:{}}).catch(()=>{});
+    setStaffToken('');
     setTeacher(null);
-    localStorage.removeItem('vlearning_sms_teacher');
+    if(window.parent===window)localStorage.removeItem('vlearning_sms_teacher');
   };
 
   useEffect(() => {

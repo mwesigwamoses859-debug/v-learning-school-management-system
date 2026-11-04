@@ -24,6 +24,8 @@ test('school records stay private, owner links are one-use and logout revokes th
  const code='a'.repeat(64);await db.prepare('INSERT INTO school_access_codes(code_hash,expires) VALUES(?,?)').bind(hash(code),Date.now()+60000).run();
  assert.equal((await request('/api/auth/platform-login',{code},'','https://untrusted.test')).status,403);
  const login=await request('/api/auth/platform-login',{code});assert.equal(login.status,200);const cookie=login.headers.get('set-cookie')!.split(';')[0];
+ const loginBody=await login.json() as any;assert.match(loginBody.token,/^[a-f0-9]{64}$/);
+ const embedded=await mf.dispatchFetch(origin+'/api/online-learning',{headers:{Authorization:'Bearer '+loginBody.token}});assert.equal(embedded.status,200,'embedded school requests work without third-party cookies');
  assert.equal((await request('/api/auth/platform-login',{code})).status,401);
  const session=await request('/api/auth/session',undefined,cookie);assert.equal((await session.json() as any).teacher.role,'Headteacher');
  const records=await request('/api/online-learning',undefined,cookie);assert.equal(records.status,200);assert.equal((await records.json() as any).totals.students,0);
