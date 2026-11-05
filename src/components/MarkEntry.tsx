@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { BookOpenCheck, CheckCircle, AlertTriangle, HelpCircle, Save, Printer, Send, Lock } from 'lucide-react';
 import { Student, Mark, ClassName, Teacher, GradeResult } from '../types';
-import { getSubjectsForClass } from '../curriculum';
+import { getSubjectsForClass, ALL_CLASSES } from '../curriculum';
 import VLearningLogo from './VLearningLogo';
 
 interface MarkEntryProps {
@@ -14,7 +14,7 @@ interface MarkEntryProps {
 
 export default function MarkEntry({ students, marks, onSaveMarks, teacher, isAdmin }: MarkEntryProps) {
   // Available classes for active teacher
-  const classesList: ClassName[] = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7'];
+  const classesList: ClassName[] = [...ALL_CLASSES];
   const filteredClasses = isAdmin
     ? classesList
     : teacher.assignments?.length

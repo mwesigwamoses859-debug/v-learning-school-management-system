@@ -13,7 +13,7 @@ import {
   Sliders
 } from 'lucide-react';
 import { Student, Mark, ClassName } from '../types';
-import { getSubjectsForClass } from '../curriculum';
+import { getSubjectsForClass, ALL_CLASSES, getNextClassName } from '../curriculum';
 import VLearningLogo from './VLearningLogo';
 
 interface AutoPromotionEngineProps {
@@ -23,7 +23,7 @@ interface AutoPromotionEngineProps {
   isAdmin: boolean;
 }
 
-const CLASSES_LIST: ClassName[] = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7'];
+const CLASSES_LIST: ClassName[] = [...ALL_CLASSES];
 
 export default function AutoPromotionEngine({
   students,
@@ -46,18 +46,7 @@ export default function AutoPromotionEngine({
   const [successMessage, setSuccessMessage] = useState('');
 
   // Get next class level mapping
-  const getNextClass = (current: ClassName): string => {
-    switch (current) {
-      case 'P.1': return 'P.2';
-      case 'P.2': return 'P.3';
-      case 'P.3': return 'P.4';
-      case 'P.4': return 'P.5';
-      case 'P.5': return 'P.6';
-      case 'P.6': return 'P.7';
-      case 'P.7': return 'Graduated';
-      default: return 'Graduated';
-    }
-  };
+  const getNextClass = getNextClassName;
 
   // Filter class list students
   const classStudents = students.filter(s => s.className === selectedClass);

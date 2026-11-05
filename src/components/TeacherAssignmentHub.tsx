@@ -14,7 +14,7 @@ import {
   Square
 } from 'lucide-react';
 import { Teacher, ClassName } from '../types';
-import { ALL_SUBJECTS, getSubjectsForClass, isSubjectForClass } from '../curriculum';
+import { ALL_SUBJECTS, getSubjectsForClass, isSubjectForClass, ALL_CLASSES } from '../curriculum';
 import VLearningLogo from './VLearningLogo';
 
 interface TeacherAssignmentHubProps {
@@ -25,7 +25,7 @@ interface TeacherAssignmentHubProps {
   isAdmin: boolean;
 }
 
-const CLASSES_LIST: ClassName[] = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7'];
+const CLASSES_LIST: ClassName[] = [...ALL_CLASSES];
 
 export default function TeacherAssignmentHub({
   teachers,

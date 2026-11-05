@@ -1,3 +1,4 @@
+import { parseClassName } from '../curriculum';
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   FileSpreadsheet, 
@@ -465,17 +466,7 @@ export default function ExcelUpload({ students, onBulkAddStudents, onSuccessRedi
           }
 
           // Class Name extraction
-          let clName = getRowVal(colIndices.className) || 'P.1';
-          clName = clName.toUpperCase().replace(/[\s._-]/g, '');
-          if (clName.startsWith('PRIMARY')) {
-            clName = clName.replace('PRIMARY', 'P');
-          }
-          if (clName.length === 2 && clName.startsWith('P')) {
-            clName = `P.${clName[1]}`;
-          }
-          if (!['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7'].includes(clName)) {
-            clName = 'P.1';
-          }
+          const clName = parseClassName(getRowVal(colIndices.className)) || 'P.1';
 
           // Entry Year extraction
           const yearRaw = getRowVal(colIndices.yearOfEntry);

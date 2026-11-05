@@ -1,3 +1,4 @@
+import { ALL_CLASSES } from './curriculum';
 import {setStaffToken} from './lib/staffFetch';
 import OnlineLearning from './components/OnlineLearning';
 import { useState, useEffect } from 'react';
@@ -613,7 +614,7 @@ export default function App() {
     ];
 
   const activeTeacherClasses = isAdmin
-    ? ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7'] as ClassName[]
+    ? [...ALL_CLASSES] as ClassName[]
     : (teacher.classes && teacher.classes.length > 0 ? teacher.classes : (['P.1'] as ClassName[]));
 
   // Calculate Alerts Center dynamically to show in notification bell

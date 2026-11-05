@@ -1,5 +1,5 @@
 import { initializeSchool } from '../shared/school-records.mjs';
-import { isSubjectForClass } from '../src/curriculum';
+import { isSubjectForClass, getNextClassName } from '../src/curriculum';
 
 type StaffRow = {
   username: string;
@@ -1233,10 +1233,7 @@ async function api(request: Request, env: Env): Promise<Response> {
       const row = await env.DB.prepare('SELECT payload FROM students WHERE id = ?').bind(promotion.studentId).first() as any;
       if (!row) continue;
       const previousStudent = JSON.parse(row.payload);
-      const allowedNextClasses: Record<string, string> = {
-        'P.1': 'P.2', 'P.2': 'P.3', 'P.3': 'P.4', 'P.4': 'P.5', 'P.5': 'P.6', 'P.6': 'P.7', 'P.7': 'Graduated'
-      };
-      if (allowedNextClasses[previousStudent.className] !== promotion.nextClassName) continue;
+      if (getNextClassName(previousStudent.className) !== promotion.nextClassName) continue;
       const student = { ...previousStudent, className: promotion.nextClassName };
       await env.DB.prepare('UPDATE students SET payload = ?, updated_at = ? WHERE id = ?')
         .bind(JSON.stringify(student), Date.now(), promotion.studentId).run();

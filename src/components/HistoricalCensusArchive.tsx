@@ -1,3 +1,4 @@
+import { ALL_CLASSES, parseClassName } from '../curriculum';
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   Users,
@@ -61,7 +62,7 @@ export interface CensusSnapshot {
   isLocked?: boolean;
 }
 
-const ALL_CLASSES: ClassName[] = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7'];
+
 const CURRENT_YEAR = new Date().getFullYear();
 
 export default function HistoricalCensusArchive({ students, marks, isAdmin }: HistoricalCensusArchiveProps) {
@@ -183,6 +184,7 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
   // Helper to normalize class names to P.1 - P.7
   const normalizeClassName = (raw: any): ClassName => {
     if (!raw) return 'P.1';
+    const parsed=parseClassName(raw);if(parsed)return parsed;
     const str = String(raw).trim().toUpperCase();
     if (str.includes('1') || str.includes('ONE')) return 'P.1';
     if (str.includes('2') || str.includes('TWO')) return 'P.2';
@@ -489,7 +491,7 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
 
     const summaryHeaders = [
       'Academic Year',
-      'P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7',
+      ...ALL_CLASSES,
       'Male Pupils',
       'Female Pupils',
       'Scholarship Beneficiaries',
@@ -500,13 +502,7 @@ export default function HistoricalCensusArchive({ students, marks, isAdmin }: Hi
       const snap = savedSnapshots[yr];
       return [
         String(yr),
-        String(snap.classCounts['P.1'] || 0),
-        String(snap.classCounts['P.2'] || 0),
-        String(snap.classCounts['P.3'] || 0),
-        String(snap.classCounts['P.4'] || 0),
-        String(snap.classCounts['P.5'] || 0),
-        String(snap.classCounts['P.6'] || 0),
-        String(snap.classCounts['P.7'] || 0),
+        ...ALL_CLASSES.map(cls=>String(snap.classCounts[cls]||0)),
         String(snap.genderCounts.Male || 0),
         String(snap.genderCounts.Female || 0),
         String(snap.scholarshipCount || 0),

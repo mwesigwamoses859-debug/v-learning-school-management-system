@@ -20,7 +20,7 @@ import {
   Info
 } from 'lucide-react';
 import { Student, Mark, Teacher, ClassName } from '../types';
-import { getSubjectsForClass } from '../curriculum';
+import { getSubjectsForClass, ALL_CLASSES } from '../curriculum';
 import VLearningLogo from './VLearningLogo';
 
 interface SubjectWorkspacesProps {
@@ -94,7 +94,7 @@ const SUBJECT_LIST: SubjectDef[] = [
   { id: 'kumon', name: 'KUMON', code: 'KUM', icon: Calculator, color: 'text-rose-600 border-rose-200 bg-rose-50', bgGradient: 'from-rose-600 to-red-800', description: 'Structured individual practice for numeracy and learning fluency' }
 ];
 
-const ALL_CLASSES: ClassName[] = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7'];
+
 
 export default function SubjectWorkspaces({
   students,
@@ -108,9 +108,7 @@ export default function SubjectWorkspaces({
   const [selectedTerm, setSelectedTerm] = useState<1 | 2 | 3>(1);
   const [selectedYear, setSelectedYear] = useState<number>(2026);
   const [activeTab, setActiveTab] = useState<'marks' | 'syllabus' | 'analytics'>('marks');
-  const availableSubjects = SUBJECT_LIST.filter(subject =>
-    getSubjectsForClass(selectedClass).includes(subject.name as never)
-  );
+  const availableSubjects: SubjectDef[] = getSubjectsForClass(selectedClass).map(name => SUBJECT_LIST.find(subject => subject.name === name) || {id:'subject-'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-'),name,code:name.split(/\s+/).filter(word=>word.length>2).map(word=>word[0]).join('').slice(0,5),icon:BookOpen,color:'text-indigo-600 border-indigo-200 bg-indigo-50',bgGradient:'from-indigo-600 to-blue-950',description: name+' learning and assessment for '+selectedClass});
 
   useEffect(() => {
     if (!availableSubjects.some(subject => subject.name === selectedSubject.name)) {
@@ -549,8 +547,9 @@ export default function SubjectWorkspaces({
               </div>
             )}
 
+            {activeTab === 'syllabus' && selectedClass.startsWith('S.') && <div className="rounded-2xl border border-slate-200 p-6 bg-white"><h3 className="font-bold">{selectedClass} · {selectedSubject.name} syllabus</h3><p className="text-sm text-slate-600 mt-3">Use the NCDC syllabus and your school’s subject combination for this class. Coverage has not been recorded in this workspace.</p><a href="https://ncdc.go.ug/resource/" target="_blank" rel="noopener noreferrer" className="inline-flex mt-4 font-bold text-indigo-700">Open NCDC curriculum resources</a></div>}
             {/* TAB 2: SYLLABUS TRACKER */}
-            {activeTab === 'syllabus' && (
+            {activeTab === 'syllabus' && selectedClass.startsWith('P.') && (
               <div className="space-y-6">
                 <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
                   <h3 className="font-extrabold text-slate-800 text-sm mb-1 uppercase tracking-wider">

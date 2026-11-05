@@ -1,3 +1,4 @@
+import { ALL_CLASSES } from '../curriculum';
 import React, { useState, useEffect } from 'react';
 import { 
   Calendar, 
@@ -48,7 +49,7 @@ interface AttendanceSupportProps {
 
 export default function AttendanceSupport({ students, teacherClasses = [], isAdmin, teacher, marks }: AttendanceSupportProps) {
   const classesList: ClassName[] = isAdmin || teacherClasses.length === 0
-    ? ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7']
+    ? [...ALL_CLASSES]
     : teacherClasses;
 
   const [selectedClass, setSelectedClass] = useState<ClassName>(classesList[0] || 'P.1');

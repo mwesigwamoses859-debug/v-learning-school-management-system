@@ -1,3 +1,4 @@
+import { parseClassName } from '../curriculum';
 import { Student, Gender, ClassName } from '../types';
 
 /**
@@ -382,17 +383,7 @@ export function mapSheetRowsToStudents(rows: any[][]): Student[] {
     }
 
     // Class Name extraction
-    let clNameRaw = getRowVal(colIndices.className) || 'P.1';
-    clNameRaw = clNameRaw.toUpperCase().replace(/[\s._-]/g, '');
-    if (clNameRaw.startsWith('PRIMARY')) {
-      clNameRaw = clNameRaw.replace('PRIMARY', 'P');
-    }
-    if (clNameRaw.length === 2 && clNameRaw.startsWith('P')) {
-      clNameRaw = `P.${clNameRaw[1]}`;
-    }
-    const className: ClassName = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7'].includes(clNameRaw)
-      ? (clNameRaw as ClassName)
-      : 'P.1';
+    const className: ClassName = parseClassName(getRowVal(colIndices.className)) || 'P.1';
 
     // Entry Year extraction
     const yearRaw = getRowVal(colIndices.yearOfEntry);

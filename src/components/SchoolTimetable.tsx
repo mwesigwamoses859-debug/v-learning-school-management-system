@@ -14,7 +14,7 @@ import {
   Printer
 } from 'lucide-react';
 import { Student, ClassName } from '../types';
-import { getSubjectsForClass } from '../curriculum';
+import { getSubjectsForClass, ALL_CLASSES } from '../curriculum';
 import VLearningLogo from './VLearningLogo';
 
 interface TimetableSlot {
@@ -52,7 +52,7 @@ export default function SchoolTimetable({ teacherClasses, isAdmin }: SchoolTimet
     }
   }, [selectedClass]);
 
-  const classesList: ClassName[] = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7'];
+  const classesList: ClassName[] = [...ALL_CLASSES];
   const daysList: ('Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday')[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const timeSlotsList = [
     '08:30 - 09:30',

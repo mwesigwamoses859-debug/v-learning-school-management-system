@@ -32,3 +32,9 @@ The owner account is created only through a verified learning-administrator sess
 ## Validation
 
 The Worker test covers empty initial data, private records, rejection of public sync writes, one-use owner access, cross-origin write rejection and session revocation. The learning repository separately tests durable registration/quiz synchronization, duplicate delivery, same-name students, secondary classes and outbox recovery.
+
+## Uganda secondary curriculum menus
+
+The shared class selectors include S.1–S.6 in students, staff assignments, mark entry, attendance, ID cards, timetables, promotion and archive controls. Secondary import labels are preserved in Excel, Google Sheets and historical census parsing; exports include secondary counts. Subject workspaces now distinguish S.1–S.4 O-Level subjects from S.5–S.6 A-Level subjects, including General Paper, Subsidiary Mathematics, Subsidiary ICT, principal subjects, languages and practical subjects. The menus are based on https://ncdc.go.ug/directorates/ and the NCDC 2025 A-Level syllabi. Optional offerings depend on each school. Existing staff subject labels are retained in the combined subject list; no student, mark, assignment or report is rewritten by this update.
+
+Subscription payment submission and approval live in the learning platform repository, inside its authenticated administrator panel. The school system does not hold merchant credentials or initiate transfers.
