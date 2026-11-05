@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "npm run build:worker && wrangler dev --port 3000",
-    "build": "vite build",
+    "build": "npm test && tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && vite build",
     "start": "wrangler dev --port 3000",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit && tsc --noEmit -p tsconfig.worker.json",
-    "build:worker": "vite build",
+    "build:worker": "npm test && tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && vite build",
     "cf:migrate": "wrangler d1 migrations apply v-learning-sms-db --remote",
     "cf:deploy": "npm run build:worker && wrangler deploy",
     "test": "node --import tsx --test tests/*.test.ts"

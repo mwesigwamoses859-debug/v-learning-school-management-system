@@ -1,3 +1,4 @@
+import {SECONDARY_CLASSES} from '../curriculum';
 import { FormEvent, useState } from 'react';
 import { KeyRound, Loader2, LockKeyhole, ShieldCheck, UserRound } from 'lucide-react';
 import { Teacher } from '../types';
@@ -67,6 +68,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
           <p className="mt-6 text-xs font-black uppercase tracking-[.2em] text-indigo-600">Authorized personnel</p>
           <h2 className="mt-2 text-3xl font-black text-slate-900">Staff sign in</h2>
           <p className="mt-2 text-sm text-slate-500">Use the username and password issued by the school administrator.</p>
+          <div className="mt-4 rounded-xl bg-pink-50 p-3"><p className="text-xs font-semibold text-slate-700">Primary P.1–P.7 and Secondary O-Level &amp; A-Level</p><div className="mt-2 flex flex-wrap gap-2" aria-label="Secondary classes supported">{SECONDARY_CLASSES.map(cls=><span key={cls} className="rounded-full bg-white border border-pink-100 px-2.5 py-1 text-xs font-bold text-pink-700">{cls}</span>)}</div></div>
 
           {error && <div role="alert" className="mt-5 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm font-semibold text-rose-700">{error}</div>}
 

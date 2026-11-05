@@ -630,14 +630,16 @@ async function api(request: Request, env: Env): Promise<Response> {
    const q=(url.searchParams.get('q')||'').slice(0,100);const level=url.searchParams.get('class')||'';
    const where=" WHERE (display_name LIKE ? OR username LIKE ? OR school_name LIKE ?) AND (?='' OR class_level=?)";
    const args=['%'+q+'%','%'+q+'%','%'+q+'%',level,level];
-   const [students,totals,results,count,connection]=await Promise.all([
+   const [students,totals,results,count,connection,schools,schoolCount]=await Promise.all([
     env.DB.prepare('SELECT * FROM vlearning_students'+where+' ORDER BY created_at DESC,learner_id LIMIT 50 OFFSET ?').bind(...args,(page-1)*50).all(),
-    env.DB.prepare('SELECT (SELECT COUNT(*) FROM vlearning_students) AS students,(SELECT COUNT(*) FROM vlearning_quiz_results) AS attempts').first(),
+    env.DB.prepare('SELECT (SELECT COUNT(*) FROM vlearning_students) AS students,(SELECT COUNT(*) FROM vlearning_schools) AS schools,(SELECT COUNT(*) FROM vlearning_quiz_results) AS attempts').first(),
     env.DB.prepare(`SELECT r.*,s.display_name,s.username,s.school_name FROM vlearning_quiz_results r LEFT JOIN vlearning_students s ON s.learner_id=r.learner_id ORDER BY r.created_at DESC,r.id LIMIT 200`).all(),
     env.DB.prepare('SELECT COUNT(*) AS total FROM vlearning_students'+where).bind(...args).first(),
-    env.DB.prepare('SELECT last_synced_at FROM school_connection WHERE id=1').first()
+    env.DB.prepare('SELECT last_synced_at FROM school_connection WHERE id=1').first(),
+    env.DB.prepare('SELECT * FROM vlearning_schools WHERE school_name LIKE ? OR contact_name LIKE ? OR username LIKE ? ORDER BY created_at DESC,account_id LIMIT 50 OFFSET ?').bind('%'+q+'%','%'+q+'%','%'+q+'%',(page-1)*50).all(),
+    env.DB.prepare('SELECT COUNT(*) AS total FROM vlearning_schools WHERE school_name LIKE ? OR contact_name LIKE ? OR username LIKE ?').bind('%'+q+'%','%'+q+'%','%'+q+'%').first()
    ]);
-   return json({students:students.results,results:results.results,totals,count,page,connection});
+   return json({students:students.results,schools:schools.results,schoolCount,results:results.results,totals,count,page,connection});
   }
 
 
